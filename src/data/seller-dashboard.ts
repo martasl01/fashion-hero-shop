@@ -61,10 +61,11 @@ export const sellerRecommendations: SellerRecommendation[] = [
       },
     ],
     actionStep: {
-      action: "Podnieś cenę Urban Slip-On o 5% — z 189 zł do 198 zł.",
+      action:
+        "Wybierz jeden produkt, który sprzedaje się teraz najczęściej — np. Urban Slip-On (189 zł) — i podnieś cenę o 10% (do ~208 zł) na 2 tygodnie.",
       testWindow: "2 tygodnie",
-      successMetric: "Utarg z tego produktu (cena × liczba zamówień)",
-      keepRule: "utarg w górę lub bez zmiany → zostaw nową cenę",
+      successMetric: "Utarg z tego produktu (cena × liczba zamówień), nie sama liczba zamówień",
+      keepRule: "utarg w górę → zostaw cenę i powtórz na kolejnym produkcie",
       revertRule: "utarg w dół → wróć do 189 zł",
     },
   },
