@@ -94,9 +94,9 @@ export default async function RecommendationDetailPage({ params }: PageProps) {
                       )}
                       <Link
                         href={`/products/${row.productSlug}`}
-                        className="text-charcoal hover:underline underline-offset-2 hover:opacity-70 transition-opacity"
+                        className="hover:underline underline-offset-2 hover:opacity-70 transition-opacity"
                       >
-                        {row.name}
+                        <span className="text-xs font-medium text-charcoal uppercase tracking-wide">{row.name}</span>
                       </Link>
                     </div>
                   </td>
@@ -189,7 +189,7 @@ export default async function RecommendationDetailPage({ params }: PageProps) {
                     <div className="aspect-square w-full bg-black/5" />
                   )}
                   <div className="p-3 flex flex-col gap-2.5 flex-1">
-                    <p className="text-[12px] text-charcoal leading-snug uppercase tracking-wide">{row.name}</p>
+                    <h3 className="text-xs font-medium text-charcoal uppercase tracking-wide truncate">{row.name}</h3>
                     <Link
                       href={`/products/${row.productSlug}`}
                       className="block w-full bg-charcoal text-white text-[12px] font-semibold text-center py-2 rounded-md hover:opacity-80 transition-opacity"
