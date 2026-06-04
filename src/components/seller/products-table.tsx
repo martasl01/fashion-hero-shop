@@ -25,19 +25,19 @@ const statusClass: Record<ProductStockStatus, string> = {
 export function ProductsTable({ products, rows }: ProductsTableProps) {
   if (rows.length === 0) {
     return (
-      <div className="border border-black/10 rounded p-8 text-center text-warm-gray text-[14px]">
-        Brak produktów do wyświetlenia.
+      <div className="flex flex-col gap-4">
+        <h2 className="text-[17px] font-semibold text-charcoal">Twoje produkty</h2>
+        <div className="border border-black/10 rounded p-8 text-center text-warm-gray text-[14px]">
+          Brak produktów do wyświetlenia.
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="border border-black/10 rounded overflow-hidden">
-      <div className="px-5 py-4 border-b border-black/10">
-        <span className="text-[12px] font-medium uppercase tracking-[0.8px] text-charcoal">
-          Twoje produkty
-        </span>
-      </div>
+    <div className="flex flex-col gap-4">
+      <h2 className="text-[17px] font-semibold text-charcoal">Twoje produkty</h2>
+      <div className="border border-black/10 rounded overflow-hidden bg-cream-light">
       <table className="w-full text-[13px]">
         <thead>
           <tr className="border-b border-black/10 bg-cream-light">
@@ -81,6 +81,7 @@ export function ProductsTable({ products, rows }: ProductsTableProps) {
           })}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

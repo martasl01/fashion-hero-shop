@@ -174,7 +174,7 @@ export default async function RecommendationDetailPage({ params }: PageProps) {
               {rec.affectedProductRows.map((row) => (
                 <div
                   key={row.sku}
-                  className="flex flex-col bg-white border border-black/10 rounded-lg overflow-hidden"
+                  className="flex flex-col bg-cream-light border border-black/10 rounded-lg overflow-hidden"
                 >
                   {productImageMap[row.productSlug] ? (
                     <div className="relative aspect-square w-full">

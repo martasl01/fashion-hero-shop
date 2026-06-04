@@ -16,7 +16,7 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
   const { id, category, title, insightShort, ctaLabel } = recommendation;
 
   return (
-    <div className="flex flex-col gap-3 bg-white border border-black/10 rounded p-5 hover:border-charcoal transition-colors">
+    <div className="flex flex-col gap-3 bg-cream-light border border-black/10 rounded p-5 hover:border-charcoal transition-colors">
       <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
         {categoryIcons[category]}
         {category}

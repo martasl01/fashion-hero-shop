@@ -16,7 +16,7 @@ export default function SellerDashboardPage() {
   return (
     <div className="p-8 flex flex-col gap-8 max-w-5xl">
       <div>
-        <h1 className="text-[22px] font-semibold text-charcoal">Dashboard</h1>
+        <h1 className="text-2xl font-semibold text-charcoal">Dashboard</h1>
         <p className="text-[13px] text-warm-gray mt-0.5">Twoje dane sprzedażowe</p>
       </div>
 

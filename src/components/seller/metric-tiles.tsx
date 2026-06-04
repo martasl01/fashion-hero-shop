@@ -15,6 +15,7 @@ export function MetricTiles({ metrics, timeRangeOptions }: MetricTilesProps) {
 
   return (
     <div className="flex flex-col gap-4">
+      <h2 className="text-[17px] font-semibold text-charcoal">Wyniki sprzedaży</h2>
       <div className="flex flex-wrap gap-2">
         {timeRangeOptions.map((opt) => (
           <button
@@ -24,7 +25,7 @@ export function MetricTiles({ metrics, timeRangeOptions }: MetricTilesProps) {
               "text-[12px] px-3 py-1.5 rounded border transition-colors",
               selected === opt.value
                 ? "bg-charcoal text-white border-charcoal"
-                : "bg-white text-charcoal border-black/20 hover:border-charcoal"
+                : "bg-cream-light text-charcoal border-black/20 hover:border-charcoal"
             )}
           >
             {opt.label}

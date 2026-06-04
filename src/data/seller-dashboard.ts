@@ -17,9 +17,16 @@ export const timeRangeOptions: TimeRangeOption[] = [
 ];
 
 export const sellerProductRows: SellerProductRow[] = [
-  { productId: "201", stock: 24, status: "active", sales30d: 18 },
-  { productId: "202", stock: 4, status: "low-stock", sales30d: 7 },
-  { productId: "203", stock: 0, status: "out-of-stock", sales30d: 12 },
+  { productId: "201", stock: 24, status: "active",        sales30d: 18 },
+  { productId: "202", stock: 4,  status: "low-stock",     sales30d: 7  },
+  { productId: "203", stock: 0,  status: "out-of-stock",  sales30d: 12 },
+  { productId: "204", stock: 8,  status: "active",        sales30d: 5  },
+  { productId: "205", stock: 14, status: "active",        sales30d: 9  },
+  { productId: "206", stock: 11, status: "active",        sales30d: 6  },
+  { productId: "207", stock: 3,  status: "low-stock",     sales30d: 4  },
+  { productId: "208", stock: 16, status: "active",        sales30d: 11 },
+  { productId: "209", stock: 0,  status: "out-of-stock",  sales30d: 8  },
+  { productId: "210", stock: 22, status: "active",        sales30d: 14 },
 ];
 
 export const sellerRecommendations: SellerRecommendation[] = [

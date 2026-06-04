@@ -12,9 +12,9 @@ export function RecommendationsWidget({ recommendations }: RecommendationsWidget
         <span className="text-[10px] font-semibold uppercase tracking-widest bg-charcoal text-white px-2 py-0.5 rounded">
           Nowość
         </span>
-        <span className="text-[13px] font-semibold text-charcoal uppercase tracking-wide">
+        <h2 className="text-[17px] font-semibold text-charcoal">
           Trzy akcje na ten tydzień
-        </span>
+        </h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {recommendations.map((rec) => (
