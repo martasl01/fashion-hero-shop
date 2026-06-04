@@ -3556,6 +3556,34 @@ export const products: Product[] = [
       "/images/products/product-10.jpg",
     ],
   },
+  {
+    id: "204",
+    name: "Torebka Mini Skórzana",
+    slug: "torebka-mini-skorzana-fashionmf",
+    category: "women",
+    productCategory: "accessories",
+    collections: ["all"],
+    price: 189,
+    type: "bag",
+    material: "leather",
+    rating: 4.3,
+    reviewCount: 12,
+    tags: ["torebka", "mini", "skóra"],
+    sellerId: "s13",
+    colors: [
+      { name: "Czarny", hex: "#1a1a1a", image: "/images/products/product-1.jpg" },
+    ],
+    sizes: [],
+    description: "Minimalistyczna torebka mini ze skóry naturalnej. Regulowany pasek.",
+    features: ["Skóra naturalna", "Regulowany pasek", "Zamek YKK"],
+    materials: "Skóra naturalna bydlęca.",
+    care: "Czyścić wilgotną szmatką. Nie moczyć.",
+    images: [
+      "/images/products/product-1.jpg",
+      "/images/products/product-9.jpg",
+      "/images/products/product-10.jpg",
+    ],
+  },
 ];
 
 export function getProduct(slug: string): Product | undefined {
