@@ -109,6 +109,15 @@ export const sellers: Seller[] = [
     joinedYear: 2026,
     rating: 0,
   },
+  {
+    id: "s13",
+    name: "FashionMF",
+    slug: "fashion-mf",
+    description: "Miejska moda z charakterem. Ubrania i buty dla tych, co wiedzą czego chcą.",
+    logo: "/images/sellers/fashion-mf.svg",
+    joinedYear: 2024,
+    rating: 4.4,
+  },
 ];
 
 export function getSeller(slug: string): Seller | undefined {

@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { AnnouncementBar } from "./announcement-bar";
 import { Header } from "./header";
 import { Footer } from "./footer";
@@ -9,8 +10,13 @@ import { QuickViewProvider } from "./quick-view-provider";
 import { AuthProvider } from "./auth-provider";
 
 function ShellInner({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const { openCart, itemCount } = useCart();
   const { wishlistItems } = useWishlist();
+
+  if (pathname.startsWith("/seller")) {
+    return <main className="flex-1">{children}</main>;
+  }
 
   return (
     <>
