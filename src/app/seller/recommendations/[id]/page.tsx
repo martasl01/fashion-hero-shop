@@ -1,17 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { ChevronLeft, Check, RotateCcw } from "lucide-react";
 import { sellerRecommendations } from "@/data/seller-dashboard";
 import { products } from "@/data/products";
 import { MetricTile } from "@/components/seller/metric-tile";
-import { cn } from "@/lib/utils";
-import type { RecommendationCategory } from "@/types/seller-dashboard";
-
-const categoryColors: Record<RecommendationCategory, string> = {
-  cennik: "bg-blue-50 text-blue-700",
-  rentowność: "bg-red-50 text-red-700",
-  listing: "bg-amber-50 text-amber-700",
-};
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -27,38 +20,30 @@ export default async function RecommendationDetailPage({ params }: PageProps) {
 
   if (!rec) notFound();
 
-  const firstRow = rec.affectedProductRows[0];
-  const product = firstRow ? products.find((p) => p.slug === firstRow.productSlug) : undefined;
-  const productImage = product?.colors[0]?.image ?? product?.images?.[0];
+  const productImageMap = Object.fromEntries(
+    rec.affectedProductRows.map((row) => {
+      const p = products.find((prod) => prod.slug === row.productSlug);
+      return [row.productSlug, p?.colors[0]?.image ?? p?.images?.[0]];
+    })
+  );
 
   return (
     <div className="p-8 max-w-3xl flex flex-col gap-10">
       {/* Wróć */}
       <Link
         href="/seller"
-        className="self-start text-[12px] text-warm-gray hover:text-charcoal transition-colors flex items-center gap-1"
+        className="self-start text-[13px] text-charcoal hover:opacity-70 transition-opacity flex items-center gap-1"
       >
-        ← Dashboard
+        <ChevronLeft size={14} />
+        Wróć do dashboardu
       </Link>
 
-      {/* Nagłówek */}
-      <div className="flex flex-col gap-2">
-        <span
-          className={cn(
-            "self-start text-[10px] font-semibold uppercase tracking-widest px-2 py-0.5 rounded",
-            categoryColors[rec.category]
-          )}
-        >
-          {rec.category}
-        </span>
-        <h1 className="text-[22px] font-semibold text-charcoal leading-snug">{rec.title}</h1>
-      </div>
+      {/* h1 */}
+      <h1 className="text-[28px] font-semibold text-charcoal leading-snug">{rec.title}</h1>
 
       {/* Co mówią liczby */}
-      <section className="flex flex-col gap-3">
-        <h2 className="text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
-          Co mówią liczby
-        </h2>
+      <section className="flex flex-col gap-4">
+        <h2 className="text-[17px] font-semibold text-charcoal">Co mówią liczby</h2>
         <div className="grid grid-cols-3 gap-4">
           <MetricTile metric={{ id: "benchmark", label: rec.benchmarkTile.label, value: rec.benchmarkTile.value }} />
           <MetricTile metric={{ id: "result", label: rec.yourResultTile.label, value: rec.yourResultTile.value }} />
@@ -67,32 +52,28 @@ export default async function RecommendationDetailPage({ params }: PageProps) {
       </section>
 
       {/* Co to znaczy */}
-      <section className="flex flex-col gap-2">
-        <h2 className="text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
-          Co to znaczy
-        </h2>
+      <section className="flex flex-col gap-3">
+        <h2 className="text-[17px] font-semibold text-charcoal">Co to znaczy</h2>
         <p className="text-[14px] text-charcoal leading-relaxed">{rec.contextExplanation}</p>
       </section>
 
       {/* Produkty których to dotyczy */}
-      <section className="flex flex-col gap-3">
-        <h2 className="text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
-          Produkty których to dotyczy
-        </h2>
-        <div className="border border-black/10 rounded overflow-hidden">
+      <section className="flex flex-col gap-4">
+        <h2 className="text-[17px] font-semibold text-charcoal">Produkty, których to dotyczy</h2>
+        <div className="border border-black/10 rounded-lg overflow-hidden">
           <table className="w-full text-[13px]">
             <thead>
               <tr className="border-b border-black/10 bg-black/[0.02]">
-                <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-2.5">
+                <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
                   Produkt
                 </th>
-                <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-2.5">
+                <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
                   Twój wynik
                 </th>
-                <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-2.5">
+                <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
                   Benchmark
                 </th>
-                <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-2.5">
+                <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
                   Różnica
                 </th>
               </tr>
@@ -101,17 +82,27 @@ export default async function RecommendationDetailPage({ params }: PageProps) {
               {rec.affectedProductRows.map((row) => (
                 <tr key={row.sku} className="border-b border-black/10 last:border-0">
                   <td className="px-4 py-3">
-                    <Link
-                      href={`/products/${row.productSlug}`}
-                      className="text-charcoal underline underline-offset-2 hover:opacity-70 transition-opacity"
-                    >
-                      {row.name}
-                      <span className="text-warm-gray ml-1">({row.sku})</span>
-                    </Link>
+                    <div className="flex items-center gap-2.5">
+                      {productImageMap[row.productSlug] && (
+                        <Image
+                          src={productImageMap[row.productSlug]!}
+                          alt={row.name}
+                          width={36}
+                          height={36}
+                          className="rounded object-cover flex-shrink-0"
+                        />
+                      )}
+                      <Link
+                        href={`/products/${row.productSlug}`}
+                        className="text-charcoal underline underline-offset-2 hover:opacity-70 transition-opacity"
+                      >
+                        {row.name}
+                      </Link>
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-charcoal">{row.yourValue}</td>
                   <td className="px-4 py-3 text-warm-gray">{row.benchmarkValue}</td>
-                  <td className="px-4 py-3 font-semibold text-charcoal">{row.difference}</td>
+                  <td className="px-4 py-3 text-right font-semibold text-charcoal">{row.difference}</td>
                 </tr>
               ))}
             </tbody>
@@ -120,64 +111,96 @@ export default async function RecommendationDetailPage({ params }: PageProps) {
       </section>
 
       {/* Co możesz zrobić */}
-      <section className="flex flex-col gap-4 border border-charcoal rounded p-5 bg-charcoal/5">
-        <h2 className="text-[11px] font-semibold uppercase tracking-widest text-charcoal">
-          Co możesz zrobić
-        </h2>
+      <section className="flex flex-col gap-4">
+        <h2 className="text-[17px] font-semibold text-charcoal">Co możesz zrobić</h2>
 
-        {/* Miniaturka produktu + CTA */}
-        {firstRow && (
-          <div className="flex items-center gap-3 bg-white border border-black/10 rounded p-3">
-            {productImage && (
-              <Image
-                src={productImage}
-                alt={firstRow.name}
-                width={48}
-                height={48}
-                className="rounded object-cover flex-shrink-0"
-              />
-            )}
-            <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-semibold text-charcoal truncate">{firstRow.name}</p>
-              <p className="text-[11px] text-warm-gray">{firstRow.sku}</p>
-            </div>
-            <Link
-              href={`/products/${firstRow.productSlug}`}
-              className="text-[12px] font-semibold text-charcoal underline underline-offset-2 hover:opacity-70 transition-opacity whitespace-nowrap"
-            >
-              Przejdź do produktu →
-            </Link>
+        <div className="border border-black/10 rounded-xl overflow-hidden bg-black/[0.02]">
+          {/* AKCJA */}
+          <div className="p-5 flex flex-col gap-2">
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray">
+              Akcja
+            </span>
+            <p className="text-[14px] text-charcoal leading-relaxed">{rec.actionStep.action}</p>
           </div>
-        )}
 
-        <p className="text-[14px] font-semibold text-charcoal leading-relaxed">
-          {rec.actionStep.action}
-        </p>
+          <div className="border-t border-black/10" />
 
-        <div className="grid grid-cols-2 gap-3">
-          <div className="flex flex-col gap-0.5">
+          {/* OKNO TESTU */}
+          <div className="p-5 flex flex-col gap-1.5">
             <span className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray">
               Okno testu
             </span>
-            <span className="text-[13px] text-charcoal">{rec.actionStep.testWindow}</span>
+            <p className="text-[14px] font-semibold text-charcoal">{rec.actionStep.testWindow}</p>
           </div>
-          <div className="flex flex-col gap-0.5">
+
+          <div className="border-t border-black/10" />
+
+          {/* METRYKA SUKCESU */}
+          <div className="p-5 flex flex-col gap-1.5">
             <span className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray">
               Metryka sukcesu
             </span>
-            <span className="text-[13px] text-charcoal">{rec.actionStep.successMetric}</span>
+            <p className="text-[14px] text-charcoal leading-relaxed">{rec.actionStep.successMetric}</p>
           </div>
-        </div>
 
-        <div className="flex flex-col gap-1.5 border-t border-charcoal/20 pt-3">
-          <p className="text-[12px] text-charcoal">
-            <span className="font-semibold text-green-700">✓ Zostaw:</span>{" "}
-            {rec.actionStep.keepRule}
-          </p>
-          <p className="text-[12px] text-charcoal">
-            <span className="font-semibold text-warm-gray">↩ Cofnij:</span>{" "}
-            {rec.actionStep.revertRule}
-          </p>
+          <div className="border-t border-black/10" />
+
+          {/* ZOSTAW / WYCOFAJ */}
+          <div className="p-5 flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray flex items-center gap-1">
+                <Check size={10} />
+                Zostaw
+              </span>
+              <p className="text-[14px] text-charcoal leading-relaxed">{rec.actionStep.keepRule}</p>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray flex items-center gap-1">
+                <RotateCcw size={10} />
+                Wycofaj
+              </span>
+              <p className="text-[14px] text-charcoal leading-relaxed">{rec.actionStep.revertRule}</p>
+            </div>
+          </div>
+
+          <div className="border-t border-black/10" />
+
+          {/* PRODUKTY DO DZIAŁANIA */}
+          <div className="p-5 flex flex-col gap-4">
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray">
+              Produkty do działania
+            </span>
+            <div className="grid grid-cols-3 gap-3">
+              {rec.affectedProductRows.map((row) => (
+                <div
+                  key={row.sku}
+                  className="flex flex-col bg-white border border-black/10 rounded-lg overflow-hidden"
+                >
+                  {productImageMap[row.productSlug] ? (
+                    <div className="relative aspect-square w-full">
+                      <Image
+                        src={productImageMap[row.productSlug]!}
+                        alt={row.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="aspect-square w-full bg-black/5" />
+                  )}
+                  <div className="p-3 flex flex-col gap-2.5 flex-1">
+                    <p className="text-[12px] text-charcoal leading-snug">{row.name}</p>
+                    <Link
+                      href={`/products/${row.productSlug}`}
+                      className="block w-full bg-charcoal text-white text-[12px] font-semibold text-center py-2 rounded-md hover:opacity-80 transition-opacity"
+                    >
+                      Przejdź do tego produktu
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
     </div>

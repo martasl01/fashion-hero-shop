@@ -43,6 +43,22 @@ export const sellerRecommendations: SellerRecommendation[] = [
         benchmarkValue: "215 zł",
         difference: "−12%",
       },
+      {
+        name: "Wsuwane Mokasyny MF",
+        sku: "SKU-205",
+        productSlug: "wsuwane-mokasyny-fashionmf",
+        yourValue: "169 zł",
+        benchmarkValue: "215 zł",
+        difference: "−21%",
+      },
+      {
+        name: "FashionMF Derby Camel",
+        sku: "SKU-206",
+        productSlug: "fashionmf-derby-camel",
+        yourValue: "199 zł",
+        benchmarkValue: "215 zł",
+        difference: "−7%",
+      },
     ],
     actionStep: {
       action: "Podnieś cenę Urban Slip-On o 5% — z 189 zł do 198 zł.",
