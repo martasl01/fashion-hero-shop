@@ -54,16 +54,16 @@ export default async function RecommendationDetailPage({ params }: PageProps) {
       {/* Co to znaczy */}
       <section className="flex flex-col gap-3">
         <h2 className="text-[17px] font-semibold text-charcoal">Co to znaczy</h2>
-        <p className="text-[14px] text-charcoal leading-relaxed">{rec.contextExplanation}</p>
+        <p className="text-[14px] text-charcoal leading-relaxed max-w-prose">{rec.contextExplanation}</p>
       </section>
 
       {/* Produkty których to dotyczy */}
       <section className="flex flex-col gap-4">
         <h2 className="text-[17px] font-semibold text-charcoal">Produkty, których to dotyczy</h2>
-        <div className="border border-black/10 rounded-lg overflow-hidden">
+        <div className="border border-black/10 rounded-lg overflow-hidden bg-cream-light">
           <table className="w-full text-[13px]">
             <thead>
-              <tr className="border-b border-black/10 bg-black/[0.02]">
+              <tr className="border-b border-black/10">
                 <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
                   Produkt
                 </th>
@@ -114,7 +114,7 @@ export default async function RecommendationDetailPage({ params }: PageProps) {
       <section className="flex flex-col gap-4">
         <h2 className="text-[17px] font-semibold text-charcoal">Co możesz zrobić</h2>
 
-        <div className="border border-black/10 rounded-xl overflow-hidden bg-black/[0.02]">
+        <div className="border border-black/10 rounded-xl overflow-hidden bg-cream-light">
           {/* AKCJA */}
           <div className="p-5 flex flex-col gap-2">
             <span className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray">

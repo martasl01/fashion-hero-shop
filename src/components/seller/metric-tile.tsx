@@ -8,7 +8,7 @@ interface MetricTileProps {
 
 export function MetricTile({ metric, className }: MetricTileProps) {
   return (
-    <div className={cn("bg-white border border-black/10 rounded p-5 flex flex-col gap-1", className)}>
+    <div className={cn("bg-cream-light border border-black/10 rounded p-5 flex flex-col gap-1", className)}>
       <span className="text-label text-warm-gray uppercase tracking-widest text-[11px]">
         {metric.label}
       </span>
