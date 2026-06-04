@@ -28,7 +28,7 @@ export default async function RecommendationDetailPage({ params }: PageProps) {
   );
 
   return (
-    <div className="p-8 max-w-3xl flex flex-col gap-10">
+    <div className="p-8 max-w-5xl flex flex-col gap-10">
       {/* Wróć */}
       <Link
         href="/seller"
