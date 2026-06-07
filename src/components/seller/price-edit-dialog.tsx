@@ -29,7 +29,8 @@ export function PriceEditDialog({
   const handleSave = () => {
     const num = parseInt(value, 10);
     if (!isNaN(num) && num > 0) {
-      posthog.capture("price_change_saved", {
+      posthog.capture("recommendation_action_completed", {
+        type: "price_change",
         sku,
         category,
         old_price: parseInt(currentPrice.replace(/[^\d]/g, ""), 10),

@@ -89,7 +89,8 @@ export function ProductPageClient({
             currentPrice={row.price}
             suggestedPrice={suggestedPrice10pct}
             onExecute={() => {
-              posthog.capture("price_change_cta_clicked", {
+              posthog.capture("recommendation_action_started", {
+                type: "price_change",
                 sku: row.sku,
                 rec_id: recId,
               });
