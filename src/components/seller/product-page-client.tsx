@@ -24,20 +24,28 @@ export function ProductPageClient({
   recommendation,
   recId,
 }: ProductPageClientProps) {
-  const { isDone, getAction, markDone } = useCompletedActions();
+  const { isProductDone, getProductAction, markDone } = useCompletedActions();
   const [showEditForm, setShowEditForm] = useState(false);
   const [showDoneDialog, setShowDoneDialog] = useState(false);
   const [savedPrice, setSavedPrice] = useState<number | null>(null);
 
   const image = product.colors[0]?.image ?? product.images?.[0];
-  const doneAction = recId ? getAction(recId) : null;
-  const isActionDone = recId ? isDone(recId) : false;
+  const isActionDone = recId ? isProductDone(recId, product.slug) : false;
+  const doneProductAction = recId ? getProductAction(recId, product.slug) : null;
+
+  // Compute 10% suggested price from current price
+  const currentPriceNum = row ? parseInt(row.price.replace(/[^\d]/g, ""), 10) : 0;
+  const suggestedPrice10pct = row ? `${Math.round(currentPriceNum * 1.10)} zł` : "";
+  const diffPercent = row ? row.difference.replace(/[^0-9]/g, "") : "";
+  const productFrameInsight = row
+    ? `Cena tego produktu jest o ${diffPercent}% niższa od mediany (${row.benchmarkValue}). Rekomendujemy podnieść cenę o 10% (do ~${Math.round(currentPriceNum * 1.10)} zł) na 2 tygodnie.`
+    : "";
 
   const displayPrice =
     savedPrice !== null
       ? `${savedPrice} zł`
-      : doneAction?.newPrice
-      ? `${doneAction.newPrice} zł`
+      : doneProductAction?.newPrice
+      ? `${doneProductAction.newPrice} zł`
       : row?.price ?? `${product.price} zł`;
 
   const handleSave = (newPrice: number) => {
@@ -74,10 +82,10 @@ export function ProductPageClient({
         ) : (
           <ActionRecommendationFrame
             title={recommendation.title}
-            insightShort={recommendation.insightShort}
+            insightShort={productFrameInsight}
             ctaLabel={recommendation.ctaLabel}
             currentPrice={row.price}
-            suggestedPrice={row.benchmarkValue}
+            suggestedPrice={suggestedPrice10pct}
             onExecute={() => setShowEditForm(true)}
           />
         )
@@ -126,7 +134,7 @@ export function ProductPageClient({
           sku={row.sku}
           category={row.category}
           currentPrice={row.price}
-          suggestedPrice={row.benchmarkValue}
+          suggestedPrice={suggestedPrice10pct}
           productName={product.name}
           onSave={handleSave}
           onCancel={() => setShowEditForm(false)}

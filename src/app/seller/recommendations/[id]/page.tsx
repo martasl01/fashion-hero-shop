@@ -1,10 +1,10 @@
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ChevronLeft, Check, RotateCcw } from "lucide-react";
 import { sellerRecommendations } from "@/data/seller-dashboard";
 import { products } from "@/data/products";
 import { MetricTile } from "@/components/seller/metric-tile";
+import { AffectedProductsTable } from "@/components/seller/affected-products-table";
 
 const backRoutes: Record<string, string> = {
   "one-action": "/seller/one-action",
@@ -130,68 +130,11 @@ export default async function RecommendationDetailPage({ params, searchParams }:
             <span className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray">
               Produkty do działania
             </span>
-            <div className="border border-black/10 rounded-lg overflow-x-auto bg-cream-light">
-              <table className="w-full text-[13px]">
-                <thead>
-                  <tr className="border-b border-black/10">
-                    <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
-                      Produkt
-                    </th>
-                    <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
-                      Kategoria
-                    </th>
-                    <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
-                      Cena
-                    </th>
-                    <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
-                      Twój wynik
-                    </th>
-                    <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
-                      Benchmark
-                    </th>
-                    <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
-                      Różnica
-                    </th>
-                    <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
-                      Akcja
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rec.affectedProductRows.map((row) => (
-                    <tr key={row.sku} className="border-b border-black/10 last:border-0">
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2.5">
-                          {productImageMap[row.productSlug] && (
-                            <Image
-                              src={productImageMap[row.productSlug]!}
-                              alt={row.name}
-                              width={36}
-                              height={36}
-                              className="rounded object-cover flex-shrink-0"
-                            />
-                          )}
-                          <span className="text-xs font-medium text-charcoal uppercase tracking-wide">{row.name}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-warm-gray">{row.category}</td>
-                      <td className="px-4 py-3 text-charcoal">{row.price}</td>
-                      <td className="px-4 py-3 text-charcoal">{row.yourValue}</td>
-                      <td className="px-4 py-3 text-warm-gray">{row.benchmarkValue}</td>
-                      <td className="px-4 py-3 text-right font-semibold text-charcoal">{row.difference}</td>
-                      <td className="px-4 py-3 text-right">
-                        <Link
-                          href={`/seller/products/${row.productSlug}?recId=${id}&sku=${row.sku}`}
-                          className="inline-block bg-charcoal text-white text-[12px] font-semibold whitespace-nowrap px-3 py-2 rounded-md hover:opacity-80 transition-opacity"
-                        >
-                          Przejdź do produktu
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <AffectedProductsTable
+              rows={rec.affectedProductRows}
+              recId={id}
+              productImageMap={productImageMap}
+            />
           </div>
         </div>
       </section>
