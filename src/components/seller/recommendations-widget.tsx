@@ -19,8 +19,8 @@ export function RecommendationsWidget({ recommendations }: RecommendationsWidget
         </div>
         <p className="text-[13px] text-warm-gray max-w-[65ch]">
           Ty decydujesz, co zmienić – my tylko liczymy. Co tydzień pokażemy Ci
-          trzy akcje oparte na danych z Twojego sklepu: gdzie podnieść cenę, co
-          wycofać, co poprawić, żeby z tej samej sprzedaży zostawało Ci więcej.
+          trzy akcje oparte na danych z Twojego sklepu, żeby z tej samej
+          sprzedaży zostawało Ci więcej.
         </p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
