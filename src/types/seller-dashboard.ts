@@ -25,6 +25,8 @@ export interface AffectedProductRow {
   name: string;
   sku: string;
   productSlug: string;
+  category: string;
+  price: string;
   yourValue: string;
   benchmarkValue: string;
   difference: string;
