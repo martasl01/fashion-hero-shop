@@ -10,7 +10,7 @@ import { MetricTiles } from "@/components/seller/metric-tiles";
 import { ProductsTable } from "@/components/seller/products-table";
 import { RecommendationsWidget } from "@/components/seller/recommendations-widget";
 
-export default function SellerDashboardPage() {
+export default function OneActionPage() {
   const sellerProducts = products.filter((p) => p.sellerId === DASHBOARD_SELLER_ID);
 
   return (

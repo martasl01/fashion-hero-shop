@@ -32,3 +32,4 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
     </div>
   );
 }
+

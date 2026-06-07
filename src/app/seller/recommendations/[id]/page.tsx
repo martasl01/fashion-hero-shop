@@ -6,16 +6,24 @@ import { sellerRecommendations } from "@/data/seller-dashboard";
 import { products } from "@/data/products";
 import { MetricTile } from "@/components/seller/metric-tile";
 
+const backRoutes: Record<string, string> = {
+  "one-action": "/seller/one-action",
+  "three-actions": "/seller/three-actions",
+};
+
 interface PageProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ from?: string }>;
 }
 
 export function generateStaticParams() {
   return sellerRecommendations.map((r) => ({ id: r.id }));
 }
 
-export default async function RecommendationDetailPage({ params }: PageProps) {
+export default async function RecommendationDetailPage({ params, searchParams }: PageProps) {
   const { id } = await params;
+  const { from } = await searchParams;
+  const backHref = (from && backRoutes[from]) ?? "/seller";
   const rec = sellerRecommendations.find((r) => r.id === id);
 
   if (!rec) notFound();
@@ -31,7 +39,7 @@ export default async function RecommendationDetailPage({ params }: PageProps) {
     <div className="p-8 max-w-5xl flex flex-col gap-10">
       {/* Wróć */}
       <Link
-        href="/seller"
+        href={backHref}
         className="self-start text-[13px] text-charcoal hover:opacity-70 transition-opacity flex items-center gap-1"
       >
         <ChevronLeft size={14} />
