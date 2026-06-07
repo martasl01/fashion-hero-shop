@@ -3475,7 +3475,7 @@ export const products: Product[] = [
     category: "unisex",
     productCategory: "shoes",
     collections: ["all"],
-    price: 299,
+    price: 189,
     type: "slip-on",
     material: "knit",
     rating: 4.4,
