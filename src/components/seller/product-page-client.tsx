@@ -81,7 +81,7 @@ export function ProductPageClient({
           <ActionDoneBanner />
         ) : (
           <ActionRecommendationFrame
-            title={recommendation.title}
+            title="Cena tego produktu jest poniżej mediany kategorii"
             insightShort={productFrameInsight}
             ctaLabel={recommendation.ctaLabel}
             currentPrice={row.price}
