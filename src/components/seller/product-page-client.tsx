@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { usePostHog } from "posthog-js/react";
 import Image from "next/image";
 import { ChevronLeft } from "lucide-react";
 import { useCompletedActions } from "@/hooks/use-completed-actions";
@@ -24,6 +25,7 @@ export function ProductPageClient({
   recommendation,
   recId,
 }: ProductPageClientProps) {
+  const posthog = usePostHog();
   const { isProductDone, getProductAction, markDone } = useCompletedActions();
   const [showEditForm, setShowEditForm] = useState(false);
   const [showDoneDialog, setShowDoneDialog] = useState(false);
@@ -86,7 +88,13 @@ export function ProductPageClient({
             ctaLabel={recommendation.ctaLabel}
             currentPrice={row.price}
             suggestedPrice={suggestedPrice10pct}
-            onExecute={() => setShowEditForm(true)}
+            onExecute={() => {
+              posthog.capture("price_change_cta_clicked", {
+                sku: row.sku,
+                rec_id: recId,
+              });
+              setShowEditForm(true);
+            }}
           />
         )
       )}

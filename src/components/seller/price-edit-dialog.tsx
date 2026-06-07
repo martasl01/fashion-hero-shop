@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { X } from "lucide-react";
+import { usePostHog } from "posthog-js/react";
 
 interface PriceEditDialogProps {
   sku: string;
@@ -21,12 +22,21 @@ export function PriceEditDialog({
   onSave,
   onCancel,
 }: PriceEditDialogProps) {
+  const posthog = usePostHog();
   const suggested = parseInt(suggestedPrice.replace(/[^\d]/g, ""), 10) || 0;
   const [value, setValue] = useState(String(suggested));
 
   const handleSave = () => {
     const num = parseInt(value, 10);
-    if (!isNaN(num) && num > 0) onSave(num);
+    if (!isNaN(num) && num > 0) {
+      posthog.capture("price_change_saved", {
+        sku,
+        category,
+        old_price: parseInt(currentPrice.replace(/[^\d]/g, ""), 10),
+        new_price: num,
+      });
+      onSave(num);
+    }
   };
 
   return (
