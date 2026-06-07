@@ -10,7 +10,7 @@ import { MetricTiles } from "@/components/seller/metric-tiles";
 import { ProductsTable } from "@/components/seller/products-table";
 import { RecommendationsWidget } from "@/components/seller/recommendations-widget";
 
-export default function SellerDashboardPage() {
+export default function ThreeActionsPage() {
   const sellerProducts = products.filter((p) => p.sellerId === DASHBOARD_SELLER_ID);
 
   return (
@@ -20,11 +20,7 @@ export default function SellerDashboardPage() {
         <p className="text-[13px] text-warm-gray mt-0.5">Twoje dane sprzedażowe</p>
       </div>
 
-      <RecommendationsWidget
-        recommendations={[sellerRecommendations[0]]}
-        headline="Akcja na ten tydzień"
-        subheadline="Ty decydujesz, co zmienić – my tylko liczymy. Co tydzień pokażemy Ci jedną akcję opartą na danych z Twojego sklepu, żeby z tej samej sprzedaży zostawało Ci więcej."
-      />
+      <RecommendationsWidget recommendations={sellerRecommendations} />
 
       <MetricTiles metrics={sellerMetrics} timeRangeOptions={timeRangeOptions} />
 

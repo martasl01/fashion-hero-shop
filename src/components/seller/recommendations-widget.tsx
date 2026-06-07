@@ -3,9 +3,15 @@ import { RecommendationCard } from "./recommendation-card";
 
 interface RecommendationsWidgetProps {
   recommendations: SellerRecommendation[];
+  headline?: string;
+  subheadline?: string;
 }
 
-export function RecommendationsWidget({ recommendations }: RecommendationsWidgetProps) {
+export function RecommendationsWidget({
+  recommendations,
+  headline = "Trzy akcje na ten tydzień",
+  subheadline = "Ty decydujesz, co zmienić – my tylko liczymy. Co tydzień pokażemy Ci trzy akcje oparte na danych z Twojego sklepu, żeby z tej samej sprzedaży zostawało Ci więcej.",
+}: RecommendationsWidgetProps) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">
@@ -14,13 +20,11 @@ export function RecommendationsWidget({ recommendations }: RecommendationsWidget
             Nowość
           </span>
           <h2 className="text-[17px] font-semibold text-charcoal">
-            Trzy akcje na ten tydzień
+            {headline}
           </h2>
         </div>
         <p className="text-[13px] text-warm-gray max-w-[65ch]">
-          Ty decydujesz, co zmienić – my tylko liczymy. Co tydzień pokażemy Ci
-          trzy akcje oparte na danych z Twojego sklepu, żeby z tej samej
-          sprzedaży zostawało Ci więcej.
+          {subheadline}
         </p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
