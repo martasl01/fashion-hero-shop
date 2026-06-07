@@ -181,7 +181,7 @@ export default async function RecommendationDetailPage({ params, searchParams }:
                       <td className="px-4 py-3 text-right font-semibold text-charcoal">{row.difference}</td>
                       <td className="px-4 py-3 text-right">
                         <Link
-                          href={`/seller/products/${row.productSlug}`}
+                          href={`/seller/products/${row.productSlug}?recId=${id}&sku=${row.sku}`}
                           className="inline-block bg-charcoal text-white text-[12px] font-semibold whitespace-nowrap px-3 py-2 rounded-md hover:opacity-80 transition-opacity"
                         >
                           Przejdź do produktu

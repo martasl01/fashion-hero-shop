@@ -1,6 +1,8 @@
+"use client";
 import Link from "next/link";
-import { Tag, TrendingDown, Package } from "lucide-react";
+import { Tag, TrendingDown, Package, CheckCircle } from "lucide-react";
 import type { SellerRecommendation } from "@/types/seller-dashboard";
+import { useCompletedActions } from "@/hooks/use-completed-actions";
 
 const categoryIcons: Record<SellerRecommendation["category"], React.ReactNode> = {
   cennik: <Tag size={13} />,
@@ -14,6 +16,24 @@ interface RecommendationCardProps {
 
 export function RecommendationCard({ recommendation }: RecommendationCardProps) {
   const { id, category, title, insightShort, ctaLabel } = recommendation;
+  const { isDone } = useCompletedActions();
+  const done = isDone(id);
+
+  if (done) {
+    return (
+      <div className="flex flex-col gap-3 bg-cream-light border border-black/10 rounded p-5 opacity-60">
+        <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
+          {categoryIcons[category]}
+          {category}
+        </span>
+        <h3 className="text-[16px] font-semibold text-charcoal leading-snug">{title}</h3>
+        <div className="flex items-center gap-1.5 text-[12px] font-semibold text-warm-gray mt-auto">
+          <CheckCircle size={13} />
+          Akcja wykonana — śledź wyniki sprzedaży
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-3 bg-cream-light border border-black/10 rounded p-5 hover:border-charcoal transition-colors">
@@ -32,4 +52,3 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
     </div>
   );
 }
-
