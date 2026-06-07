@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface ProductAction {
   productSlug: string;
@@ -11,27 +11,8 @@ interface CompletedAction {
   products: ProductAction[];
 }
 
-const STORAGE_KEY = "fh_completed_actions";
-
-function loadActions(): CompletedAction[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]") as unknown[];
-    // Guard against old single-product format (productSlug string instead of products array)
-    return raw.filter(
-      (a): a is CompletedAction =>
-        typeof a === "object" && a !== null && "recId" in a && "products" in a
-    );
-  } catch {
-    return [];
-  }
-}
-
 export function useCompletedActions() {
   const [actions, setActions] = useState<CompletedAction[]>([]);
-  useEffect(() => {
-    setActions(loadActions());
-  }, []);
 
   const isDone = (recId: string) =>
     actions.some((a) => a.recId === recId && a.products.length > 0);
@@ -54,12 +35,10 @@ export function useCompletedActions() {
         ]
       : [{ productSlug, newPrice }];
 
-    const updated = [
+    setActions([
       ...actions.filter((a) => a.recId !== recId),
       { recId, products: updatedProducts },
-    ];
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    setActions(updated);
+    ]);
   };
 
   return { isDone, isProductDone, getProductAction, markDone };
