@@ -8,6 +8,7 @@ import { CartProvider, useCart } from "./cart-provider";
 import { WishlistProvider, useWishlist } from "./wishlist-provider";
 import { QuickViewProvider } from "./quick-view-provider";
 import { AuthProvider } from "./auth-provider";
+import { PostHogProvider } from "./posthog-provider";
 
 function ShellInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -30,14 +31,16 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
 export function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <WishlistProvider>
-          <QuickViewProvider>
-            <ShellInner>{children}</ShellInner>
-          </QuickViewProvider>
-        </WishlistProvider>
-      </CartProvider>
-    </AuthProvider>
+    <PostHogProvider>
+      <AuthProvider>
+        <CartProvider>
+          <WishlistProvider>
+            <QuickViewProvider>
+              <ShellInner>{children}</ShellInner>
+            </QuickViewProvider>
+          </WishlistProvider>
+        </CartProvider>
+      </AuthProvider>
+    </PostHogProvider>
   );
 }
