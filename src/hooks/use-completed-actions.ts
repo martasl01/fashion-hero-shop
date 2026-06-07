@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface ProductAction {
   productSlug: string;
@@ -28,7 +28,10 @@ function loadActions(): CompletedAction[] {
 }
 
 export function useCompletedActions() {
-  const [actions, setActions] = useState<CompletedAction[]>(() => loadActions());
+  const [actions, setActions] = useState<CompletedAction[]>([]);
+  useEffect(() => {
+    setActions(loadActions());
+  }, []);
 
   const isDone = (recId: string) =>
     actions.some((a) => a.recId === recId && a.products.length > 0);
