@@ -1,0 +1,84 @@
+"use client";
+import Image from "next/image";
+import { usePostHog } from "posthog-js/react";
+import type { ReturnsProductRow } from "@/types/seller-dashboard";
+
+interface ReturnsProductsTableProps {
+  rows: ReturnsProductRow[];
+  subcategory: string;
+}
+
+// Tabela produktów dotkniętych problemem zwrotów. Link „edytuj” to atrapa WoZ:
+// rejestruje intencję (zdarzenie PostHog), ale nie prowadzi do realnej edycji
+// i nie pokazuje potwierdzenia akcji.
+export function ReturnsProductsTable({
+  rows,
+  subcategory,
+}: ReturnsProductsTableProps) {
+  const posthog = usePostHog();
+
+  const handleEdit = (event: React.MouseEvent<HTMLAnchorElement>, sku: string) => {
+    event.preventDefault();
+    posthog?.capture("woz_edit_click", { sku, source: "returns-action" });
+  };
+
+  return (
+    <div className="border border-black/10 rounded-lg overflow-x-auto bg-cream-light">
+      <table className="w-full text-[13px]">
+        <thead>
+          <tr className="border-b border-black/10">
+            <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
+              Produkt
+            </th>
+            <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
+              Twój RR
+            </th>
+            <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
+              Benchmark podkategorii „{subcategory}”
+            </th>
+            <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
+              Różnica
+            </th>
+            <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
+              Akcja
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row.sku} className="border-b border-black/10 last:border-0">
+              <td className="px-4 py-3">
+                <div className="flex items-center gap-2.5">
+                  <Image
+                    src={row.imageSrc}
+                    alt={row.name}
+                    width={36}
+                    height={36}
+                    className="rounded object-cover flex-shrink-0"
+                  />
+                  <span className="text-xs font-medium text-charcoal uppercase tracking-wide">
+                    {row.name}
+                  </span>
+                </div>
+              </td>
+              <td className="px-4 py-3 text-charcoal">{row.yourValue}</td>
+              <td className="px-4 py-3 text-warm-gray">{row.benchmarkValue}</td>
+              <td className="px-4 py-3 text-right font-semibold text-charcoal">
+                {row.difference}
+              </td>
+              <td className="px-4 py-3 text-right">
+                <a
+                  href="#"
+                  onClick={(event) => handleEdit(event, row.sku)}
+                  className="inline-block bg-charcoal text-white text-[12px] font-semibold whitespace-nowrap px-3 py-2 rounded-md hover:opacity-80 transition-opacity"
+                >
+                  Edytuj kartę produktu
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}

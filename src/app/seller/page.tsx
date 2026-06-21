@@ -9,6 +9,7 @@ import {
 import { MetricTiles } from "@/components/seller/metric-tiles";
 import { ProductsTable } from "@/components/seller/products-table";
 import { RecommendationsWidget } from "@/components/seller/recommendations-widget";
+import { BartekActionWidget } from "@/components/seller/bartek-action-widget";
 import { PrototypeSwitch } from "@/components/seller/prototype-switch";
 
 export default function SellerDashboardPage() {
@@ -24,6 +25,15 @@ export default function SellerDashboardPage() {
               headline="Akcja na ten tydzień"
               subheadline="Ty decydujesz, co zmienić – my tylko liczymy. Co tydzień pokażemy Ci jedną akcję opartą na danych z Twojego sklepu, żeby z tej samej sprzedaży zostawało Ci więcej."
             />
+
+            <MetricTiles metrics={sellerMetrics} timeRangeOptions={timeRangeOptions} />
+
+            <ProductsTable products={sellerProducts} rows={sellerProductRows} />
+          </>
+        }
+        bartekView={
+          <>
+            <BartekActionWidget />
 
             <MetricTiles metrics={sellerMetrics} timeRangeOptions={timeRangeOptions} />
 

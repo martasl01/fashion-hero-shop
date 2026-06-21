@@ -66,7 +66,13 @@ function UnderConstruction() {
   );
 }
 
-export function PrototypeSwitch({ dorotaView }: { dorotaView: React.ReactNode }) {
+export function PrototypeSwitch({
+  dorotaView,
+  bartekView,
+}: {
+  dorotaView: React.ReactNode;
+  bartekView?: React.ReactNode;
+}) {
   const [type, setType] = usePrototypeType();
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -102,7 +108,7 @@ export function PrototypeSwitch({ dorotaView }: { dorotaView: React.ReactNode })
         </div>
       </div>
 
-      {type === "dorota" ? dorotaView : <UnderConstruction />}
+      {type === "dorota" ? dorotaView : (bartekView ?? <UnderConstruction />)}
     </>
   );
 }

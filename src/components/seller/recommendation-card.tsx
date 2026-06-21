@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { Tag, TrendingDown, Package, CheckCircle } from "lucide-react";
 import type { SellerRecommendation } from "@/types/seller-dashboard";
 import { useCompletedActions } from "@/hooks/use-completed-actions";
@@ -15,7 +16,7 @@ interface RecommendationCardProps {
 }
 
 export function RecommendationCard({ recommendation }: RecommendationCardProps) {
-  const { id, category, title, insightShort, ctaLabel } = recommendation;
+  const { id, category, title, insightShort, ctaLabel, primaryProduct } = recommendation;
   const { isDone } = useCompletedActions();
   const done = isDone(id);
 
@@ -27,6 +28,16 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
           {category}
         </span>
         <h3 className="text-[16px] font-semibold text-charcoal leading-snug">{title}</h3>
+        <div className="flex items-center gap-2.5">
+          <Image
+            src={primaryProduct.imageSrc}
+            alt={primaryProduct.name}
+            width={40}
+            height={40}
+            className="rounded-md object-cover flex-shrink-0"
+          />
+          <span className="text-[11px] text-warm-gray">SKU: {primaryProduct.sku}</span>
+        </div>
         <div className="flex items-center gap-1.5 text-[12px] font-semibold text-warm-gray mt-auto">
           <CheckCircle size={13} />
           Akcja wykonana — śledź wyniki sprzedaży
@@ -42,6 +53,16 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
         {category}
       </span>
       <h3 className="text-[16px] font-semibold text-charcoal leading-snug">{title}</h3>
+      <div className="flex items-center gap-2.5">
+        <Image
+          src={primaryProduct.imageSrc}
+          alt={primaryProduct.name}
+          width={40}
+          height={40}
+          className="rounded-md object-cover flex-shrink-0"
+        />
+        <span className="text-[11px] text-warm-gray">SKU: {primaryProduct.sku}</span>
+      </div>
       <p className="text-[12px] text-warm-gray leading-relaxed flex-1">{insightShort}</p>
       <Link
         href={`/seller/recommendations/${id}`}
