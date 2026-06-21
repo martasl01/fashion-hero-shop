@@ -1,4 +1,10 @@
-import type { SellerMetric, TimeRangeOption, SellerProductRow, SellerRecommendation } from "@/types/seller-dashboard";
+import type {
+  SellerMetric,
+  TimeRangeOption,
+  SellerProductRow,
+  SellerRecommendation,
+  ReturnsActionCard,
+} from "@/types/seller-dashboard";
 
 export const DASHBOARD_SELLER_ID = "s13";
 
@@ -33,18 +39,26 @@ export const sellerRecommendations: SellerRecommendation[] = [
   {
     id: "1",
     category: "cennik",
-    title: "Twoje ceny są poniżej mediany kategorii",
-    insightShort: "Mediana kategorii Buty: 215 zł. Twoja średnia: 189 zł (−12%). Masz przestrzeń na podwyżkę.",
+    title: "Twoja cena jest poniżej mediany podkategorii",
+    insightShort: "Mediana podkategorii klapki i japonki: 215 zł. Twoja cena: 189 zł (−12%). Masz przestrzeń na podwyżkę.",
     ctaLabel: "Podnieś ceny",
-    benchmarkTile: { label: "Mediana kategorii Buty", value: "215 zł" },
-    yourResultTile: { label: "Twoja średnia cena", value: "189 zł" },
-    differenceTile: { label: "Różnica", value: "−12% (−26 zł)" },
+    metricsTimeNote: "Mediana ceny liczona z ostatnich 90 dni (sellerzy z RR <12%).",
+    primaryProduct: {
+      name: "Urban Slip-On",
+      sku: "201",
+      imageSrc: "/images/products/product-2.jpg",
+      category: "Buty > Klapki i japonki",
+      productSlug: "urban-slip-on-fashionmf",
+    },
+    yourResultTile: { label: "Twoja cena (Urban Slip-On)", value: "189 zł" },
+    benchmarkTile: { label: "Benchmark", value: "215 zł", sub: "Mediana podkategorii: klapki i japonki" },
+    financialEffectTile: { label: "Rekomendowana cena testowa", value: "208 zł", sub: "+10% na 2 tygodnie" },
     contextExplanation:
-      "Twoje produkty w kategorii Buty mogą wyglądać na tańsze w porównaniu z ofertą konkurencji. To może być świadomy wybór cenowy albo niezamierzona luka — ceny nie były aktualizowane od dłuższego czasu.",
+      "Twój produkt w podkategorii klapki i japonki może wyglądać na tańszy w porównaniu z ofertą konkurencji. To może być świadomy wybór cenowy albo niezamierzona luka — cena nie była aktualizowana od dłuższego czasu.",
     affectedProductRows: [
       {
         name: "Urban Slip-On",
-        sku: "SKU-201",
+        sku: "201",
         productSlug: "urban-slip-on-fashionmf",
         category: "Buty",
         price: "189 zł",
@@ -52,33 +66,13 @@ export const sellerRecommendations: SellerRecommendation[] = [
         benchmarkValue: "215 zł",
         difference: "−12%",
       },
-      {
-        name: "Wsuwane Mokasyny MF",
-        sku: "SKU-205",
-        productSlug: "wsuwane-mokasyny-fashionmf",
-        category: "Buty",
-        price: "169 zł",
-        yourValue: "169 zł",
-        benchmarkValue: "215 zł",
-        difference: "−21%",
-      },
-      {
-        name: "FashionMF Derby Camel",
-        sku: "SKU-206",
-        productSlug: "fashionmf-derby-camel",
-        category: "Buty",
-        price: "199 zł",
-        yourValue: "199 zł",
-        benchmarkValue: "215 zł",
-        difference: "−7%",
-      },
     ],
     actionStep: {
-      action:
-        "Wybierz jeden produkt, który sprzedaje się teraz najczęściej — np. Urban Slip-On (189 zł) — i podnieś cenę o 10% (do ~208 zł) na 2 tygodnie.",
+      action: "Podnieś cenę o 10% (z 189 zł do ~208 zł) na 2 tygodnie i sprawdź, czy utarg wzrośnie.",
+      actionInsight: "Nawet po podwyżce zostajesz poniżej mediany podkategorii (215 zł), więc ryzyko spadku zamówień jest niewielkie.",
       testWindow: "2 tygodnie",
-      successMetric: "Utarg z tego produktu (cena × liczba zamówień), nie sama liczba zamówień",
-      keepRule: "utarg w górę → zostaw cenę i powtórz na kolejnym produkcie",
+      successMetric: "Utarg z Urban Slip-On (cena × liczba zamówień), nie sama liczba zamówień",
+      keepRule: "utarg w górę → zostaw cenę i możesz powtórzyć na kolejnym produkcie",
       revertRule: "utarg w dół → wróć do 189 zł",
     },
   },
@@ -88,15 +82,23 @@ export const sellerRecommendations: SellerRecommendation[] = [
     title: "Zwroty zjadają marżę na Kopertowej Midi",
     insightShort: "Kopertowa Midi: zwroty 41%, mediana kategorii 14%. Każda sprzedaż generuje stratę −12 zł.",
     ctaLabel: "Wycofaj produkt",
-    benchmarkTile: { label: "Mediana zwrotów w Sukienkach", value: "14%" },
+    metricsTimeNote: "Return rate liczymy na zamówieniach sprzed co najmniej 30 dni, patrząc wstecz do ~90 dni.",
+    primaryProduct: {
+      name: "Kopertowa Midi",
+      sku: "202",
+      imageSrc: "/images/products/product-3.jpg",
+      category: "Sukienki",
+      productSlug: "kopertowa-midi-fashionmf",
+    },
     yourResultTile: { label: "Zwroty Kopertowej Midi", value: "41%" },
-    differenceTile: { label: "Różnica", value: "+27 pp (−12 zł/szt.)" },
+    benchmarkTile: { label: "Mediana zwrotów w Sukienkach", value: "14%" },
+    financialEffectTile: { label: "Strata na tym SKU", value: "−12 zł / szt.", sub: "Każda sprzedaż generuje stratę po zwrocie" },
     contextExplanation:
       "Wysoki wskaźnik zwrotów może wynikać z opisu rozmiaru niezgodnego z rzeczywistością lub ze zdjęcia nieodpowiadającego fasoniowi. To może być jednorazowy spike albo systemowy problem z tym modelem.",
     affectedProductRows: [
       {
         name: "Kopertowa Midi",
-        sku: "SKU-202",
+        sku: "202",
         productSlug: "kopertowa-midi-fashionmf",
         category: "Sukienki",
         price: "249 zł",
@@ -106,9 +108,9 @@ export const sellerRecommendations: SellerRecommendation[] = [
       },
     ],
     actionStep: {
-      action: "Zmień główne zdjęcie produktu na dokładnie oddające fason lub wycofaj Kopertową Midi ze sprzedaży.",
+      action: "Masz RR 41% na tym SKU. Możesz zmienić główne zdjęcie na dokładnie oddające fason — albo wycofać Kopertową Midi ze sprzedaży. Możesz też nic nie robić.",
       testWindow: "30 dni po zmianie zdjęcia",
-      successMetric: "Wskaźnik zwrotów dla SKU-202",
+      successMetric: "Wskaźnik zwrotów dla SKU 202",
       keepRule: "RR ≤ 20% → zostaw produkt",
       revertRule: "RR > 30% po 30 dniach → wycofaj",
     },
@@ -119,15 +121,23 @@ export const sellerRecommendations: SellerRecommendation[] = [
     title: "Twoje listingi w Torebkach mają za mało zdjęć",
     insightShort: "Torebka Mini: 3 zdjęcia, mediana kategorii 6. Algorytm FH preferuje listingi z ≥6 zdjęciami.",
     ctaLabel: "Uzupełnij zdjęcia",
-    benchmarkTile: { label: "Mediana zdjęć w Torebkach", value: "6 zdjęć" },
+    metricsTimeNote: "Dane listingowe aktualizowane co 7 dni.",
+    primaryProduct: {
+      name: "Torebka Mini Skórzana",
+      sku: "204",
+      imageSrc: "/images/products/product-4.jpg",
+      category: "Torebki",
+      productSlug: "torebka-mini-skorzana-fashionmf",
+    },
     yourResultTile: { label: "Zdjęcia na Torebce Mini", value: "3 zdjęcia" },
-    differenceTile: { label: "Różnica", value: "−3 zdjęcia (−50%)" },
+    benchmarkTile: { label: "Mediana zdjęć w Torebkach", value: "6 zdjęć" },
+    financialEffectTile: { label: "Różnica", value: "−3 zdjęcia (−50%)" },
     contextExplanation:
       "Algorytm FashionHero preferuje listingi z co najmniej 6 zdjęciami w wynikach wyszukiwania. Produkty z mniejszą liczbą zdjęć są niżej w rankingu, co przekłada się bezpośrednio na liczbę kliknięć. To może być świadomy wybór albo przeoczenie przy dodawaniu produktu.",
     affectedProductRows: [
       {
         name: "Torebka Mini Skórzana",
-        sku: "SKU-204",
+        sku: "204",
         productSlug: "torebka-mini-skorzana-fashionmf",
         category: "Torebki",
         price: "189 zł",
@@ -137,11 +147,64 @@ export const sellerRecommendations: SellerRecommendation[] = [
       },
     ],
     actionStep: {
-      action: "Dodaj 3 zdjęcia do Torebki Mini — zdjęcie z boku, ze środka, na ramieniu.",
+      action: "Masz 3 zdjęcia na Torebce Mini — możesz dodać 3 brakujące (zdjęcie z boku, ze środka, na ramieniu). Możesz też nic nie zmieniać.",
       testWindow: "2 tygodnie od aktualizacji",
       successMetric: "Wyświetlenia listingu w wyszukiwarce",
-      keepRule: "wyświetlenia wzrosły ≥10% → powtórz na kolejnych listingach",
+      keepRule: "wyświetlenia wzrosły ≥10% → możesz powtórzyć na kolejnych listingach",
       revertRule: "brak zmiany po 2 tygodniach → sprawdź ranking kategorii osobno",
     },
   },
 ];
+
+// Karta akcji bartek-type — wariant zwrotów. Dane zamockowane na sztywno
+// (prototyp WoZ, bez silnika i źródła danych).
+export const returnsAction: ReturnsActionCard = {
+  chipTitle: "Jeden produkt odpowiada za większość Twoich zwrotów",
+  chipInsight:
+    "Sukienka letnia midi wraca w 34% — przy 18% w podkategorii. Tracisz na tym ~1 200 zł przychodu miesięcznie.",
+  chipCta: "Ogranicz zwroty",
+  subcategory: "sukienki letnie",
+  categoryPath: "Odzież > Sukienki letnie",
+  h1: "Sukienka letnia midi wraca częściej niż reszta Twojego asortymentu",
+  metricsTimeNote:
+    "Return rate liczymy na zamówieniach sprzed co najmniej 30 dni, patrząc wstecz do ~90 dni.",
+  yourResultTile: { label: "Twoje zwroty na tym SKU", value: "34%" },
+  benchmarkTile: {
+    label: "Benchmark",
+    value: "18%",
+    sub: "Mediana podkategorii: sukienki letnie",
+  },
+  costTile: {
+    label: "Utracony przychód",
+    value: "1 200 zł / mies.",
+    sub: "Tyle zarobku oddajesz z powrotem na zwrotach tego SKU.",
+  },
+  meaning:
+    "Co trzecia sztuka tego produktu wraca. To może być świadomy wybór (np. trudny do dopasowania krój) albo niezamierzona luka (brakująca tabela rozmiarów, słabe zdjęcia). Najczęstszy powód zwrotów w tej podkategorii to niedopasowanie rozmiaru.",
+  products: [
+    {
+      name: "Sukienka letnia midi",
+      sku: "203",
+      imageSrc: "/images/products/sukienka-letnia-midi.jpg",
+      yourValue: "34%",
+      benchmarkValue: "18%",
+      difference: "+16 pp",
+    },
+  ],
+  options: [
+    {
+      title: "Dodaj tabelę rozmiarów",
+      insight: "Produkty z tabelą rozmiarów mają 2× niższy return rate.",
+    },
+    {
+      title: "Dodaj 2 zdjęcia na modelce",
+      insight: "Kupujący częściej dodają takie produkty do koszyka.",
+    },
+  ],
+  verification: {
+    testWindow:
+      "Po 2 tygodniach sprawdź return rate na tym SKU (na zamówieniach sprzed min. 30 dni).",
+    keepRule: "RR w dół → zostaw zmianę i powtórz na kolejnym produkcie.",
+    revertRule: "RR bez zmian → wróć do poprzedniej wersji karty produktu.",
+  },
+};
