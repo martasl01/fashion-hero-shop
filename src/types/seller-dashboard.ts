@@ -44,6 +44,8 @@ export interface AffectedProductRow {
   yourValue: string;
   benchmarkValue: string;
   difference: string;
+  demandSignal?: string; // opisowy sygnał popytu, np. „18 sprzedanych / 30 dni" (tylko cennik)
+  lowDemand?: boolean; // SKU poniżej mediany bez popytu — nie rekomendujemy podwyżki (US-3)
 }
 
 export interface ActionStep {
@@ -61,6 +63,7 @@ export interface PrimaryProduct {
   imageSrc: string;
   category: string;
   productSlug: string;
+  demandSignal?: string; // opisowy sygnał popytu na kaflu, np. „18 sprzedanych / 30 dni" (tylko cennik)
 }
 
 export interface SellerRecommendation {

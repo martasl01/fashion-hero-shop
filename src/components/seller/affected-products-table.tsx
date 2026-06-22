@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CheckCircle } from "lucide-react";
 import { useCompletedActions } from "@/hooks/use-completed-actions";
 import type { AffectedProductRow } from "@/types/seller-dashboard";
+import { DemandSignal } from "./demand-signal";
 
 interface AffectedProductsTableProps {
   rows: AffectedProductRow[];
@@ -41,6 +42,9 @@ export function AffectedProductsTable({
             <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
               Różnica
             </th>
+            <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
+              Popyt
+            </th>
             <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
               Akcja
             </th>
@@ -77,8 +81,17 @@ export function AffectedProductsTable({
                 <td className="px-4 py-3 text-right font-semibold text-charcoal">
                   {row.difference}
                 </td>
+                <td className="px-4 py-3">
+                  {row.demandSignal && (
+                    <DemandSignal text={row.demandSignal} lowDemand={row.lowDemand} />
+                  )}
+                </td>
                 <td className="px-4 py-3 text-right">
-                  {done ? (
+                  {row.lowDemand ? (
+                    <span className="text-[12px] text-warm-gray whitespace-nowrap">
+                      Bez rekomendacji podwyżki
+                    </span>
+                  ) : done ? (
                     <span className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-warm-gray">
                       <CheckCircle size={13} />
                       Zmieniono

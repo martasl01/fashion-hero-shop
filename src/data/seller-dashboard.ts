@@ -48,6 +48,7 @@ export const sellerRecommendations: SellerRecommendation[] = [
       imageSrc: "/images/products/product-2.jpg",
       category: "Buty > Klapki i japonki",
       productSlug: "urban-slip-on-fashionmf",
+      demandSignal: "18 sprzedanych / 30 dni",
     },
     yourResultTile: {
       label: "Twoja cena (Urban Slip-On)",
@@ -73,6 +74,7 @@ export const sellerRecommendations: SellerRecommendation[] = [
         yourValue: "189 zł",
         benchmarkValue: "215 zł",
         difference: "−12%",
+        demandSignal: "18 sprzedanych / 30 dni",
       },
     ],
     actionStep: {
