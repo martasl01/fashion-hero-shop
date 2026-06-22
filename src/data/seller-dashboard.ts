@@ -161,7 +161,7 @@ export const sellerRecommendations: SellerRecommendation[] = [
 export const returnsAction: ReturnsActionCard = {
   chipTitle: "Jeden produkt odpowiada za większość Twoich zwrotów",
   chipInsight:
-    "Sukienka letnia midi wraca w 34% — przy 18% w podkategorii. Tracisz na tym ~1 200 zł przychodu miesięcznie.",
+    "Sukienka letnia midi wraca w 34% — przy 18% w podkategorii. Te zwroty kosztują Cię ~1 200 zł na obniżonej odsprzedaży i zamrożonym towarze.",
   chipCta: "Ogranicz zwroty",
   subcategory: "sukienki letnie",
   categoryPath: "Odzież > Sukienki letnie",
@@ -175,9 +175,9 @@ export const returnsAction: ReturnsActionCard = {
     sub: "Mediana podkategorii: sukienki letnie",
   },
   costTile: {
-    label: "Utracony przychód",
-    value: "1 200 zł / mies.",
-    sub: "Tyle zarobku oddajesz z powrotem na zwrotach tego SKU.",
+    label: "Ile kosztują Cię zwroty",
+    value: "~1 200 zł",
+    sub: "Te 142 zwroty. Średnio na każdym tracisz ~8,50 zł — między obniżoną odsprzedażą a towarem zamrożonym do następnego sezonu.",
   },
   meaning:
     "Co trzecia sztuka tego produktu wraca. To może być świadomy wybór (np. trudny do dopasowania krój) albo niezamierzona luka (brakująca tabela rozmiarów, słabe zdjęcia). Najczęstszy powód zwrotów w tej podkategorii to niedopasowanie rozmiaru.",
