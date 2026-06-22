@@ -4,6 +4,7 @@ import type {
   SellerProductRow,
   SellerRecommendation,
   ReturnsActionCard,
+  PricingSkuInput,
 } from "@/types/seller-dashboard";
 
 export const DASHBOARD_SELLER_ID = "s13";
@@ -33,6 +34,33 @@ export const sellerProductRows: SellerProductRow[] = [
   { productId: "208", stock: 16, status: "active",        sales30d: 11 },
   { productId: "209", stock: 0,  status: "out-of-stock",  sales30d: 8  },
   { productId: "210", stock: 22, status: "active",        sales30d: 14 },
+];
+
+// Wejście silnika rekomendacji cenowej (wariant A) — te same SKU co
+// sellerProductRows. Dane zamockowane (prototyp WoZ). Dobrane tak, by pokazać
+// pełny rozkład wyników silnika: 3 rekomendacje (⬆ zapomniana, ⬆ popyt, ⬇ za
+// drogo), reszta to cisza (świadomy wybór / brak dowodu) lub poza testem.
+export const pricingSkuInputs: PricingSkuInput[] = [
+  // 201 → Zapomniana cena ⬆ (spójne z ręczną rekomendacją #1: 189 vs 215, stoi długo, rynek +9%)
+  { productId: "201", cena: 189, mediana: 215, n: 14, pozycja: 0.10, dniOdZmiany: 420, ruchMedianyPct: 9, popytWysoki: false, zalega: false },
+  // 202 → Świadomy wybór (świeża cena: zmieniona 12 dni temu)
+  { productId: "202", cena: 230, mediana: 260, n: 11, pozycja: 0.50, dniOdZmiany: 12,  ruchMedianyPct: 2, popytWysoki: false, zalega: false },
+  // 203 → Brak dowodu (taniej i stara cena, ale rynek się nie ruszył: +2%)
+  { productId: "203", cena: 150, mediana: 175, n: 14, pozycja: 0.15, dniOdZmiany: 200, ruchMedianyPct: 2, popytWysoki: false, zalega: false },
+  // 204 → Poza testem (odchylenie 4,6% < 8%)
+  { productId: "204", cena: 205, mediana: 215, n: 14, pozycja: 0.40, dniOdZmiany: 400, ruchMedianyPct: 9, popytWysoki: false, zalega: false },
+  // 205 → Poza testem (n = 3 < 5)
+  { productId: "205", cena: 150, mediana: 215, n: 3,  pozycja: 0.10, dniOdZmiany: 400, ruchMedianyPct: 9, popytWysoki: false, zalega: false },
+  // 206 → Za drogo ⬇ (drożej + zalega)
+  { productId: "206", cena: 168, mediana: 140, n: 12, pozycja: 0.92, dniOdZmiany: 200, ruchMedianyPct: 1, popytWysoki: false, zalega: true  },
+  // 207 → Poza testem (walidacja: popyt i zaleganie naraz — stan niezdefiniowany)
+  { productId: "207", cena: 120, mediana: 150, n: 10, pozycja: 0.20, dniOdZmiany: 90,  ruchMedianyPct: 4, popytWysoki: true,  zalega: true  },
+  // 208 → Popyt / wyprzedaż ⬆ (taniej + popyt wysoki, nisko w rozkładzie)
+  { productId: "208", cena: 95,  mediana: 110, n: 9,  pozycja: 0.18, dniOdZmiany: 60,  ruchMedianyPct: 1, popytWysoki: true,  zalega: false },
+  // 209 → Świadomy wybór (środek rozkładu: pozycja 0,55)
+  { productId: "209", cena: 180, mediana: 210, n: 12, pozycja: 0.55, dniOdZmiany: 300, ruchMedianyPct: 6, popytWysoki: false, zalega: false },
+  // 210 → Brak dowodu (drożej, ale nie zalega — nic nie pasuje)
+  { productId: "210", cena: 240, mediana: 215, n: 14, pozycja: 0.85, dniOdZmiany: 300, ruchMedianyPct: 0, popytWysoki: false, zalega: false },
 ];
 
 export const sellerRecommendations: SellerRecommendation[] = [

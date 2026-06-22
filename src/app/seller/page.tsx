@@ -5,10 +5,12 @@ import {
   timeRangeOptions,
   sellerProductRows,
   sellerRecommendations,
+  pricingSkuInputs,
 } from "@/data/seller-dashboard";
 import { MetricTiles } from "@/components/seller/metric-tiles";
 import { ProductsTable } from "@/components/seller/products-table";
 import { RecommendationsWidget } from "@/components/seller/recommendations-widget";
+import { PricingRecommendationsWidget } from "@/components/seller/pricing-recommendations-widget";
 import { BartekActionWidget } from "@/components/seller/bartek-action-widget";
 import { PrototypeSwitch } from "@/components/seller/prototype-switch";
 
@@ -25,6 +27,8 @@ export default function SellerDashboardPage() {
               headline="Akcja na ten tydzień"
               subheadline="Ty decydujesz, co zmienić – my tylko liczymy. Co tydzień pokażemy Ci jedną akcję opartą na danych z Twojego sklepu, żeby z tej samej sprzedaży zostawało Ci więcej."
             />
+
+            <PricingRecommendationsWidget products={sellerProducts} inputs={pricingSkuInputs} />
 
             <MetricTiles metrics={sellerMetrics} timeRangeOptions={timeRangeOptions} />
 
