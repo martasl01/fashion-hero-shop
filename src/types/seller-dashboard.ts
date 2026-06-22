@@ -66,6 +66,28 @@ export interface PrimaryProduct {
   demandSignal?: string; // opisowy sygnał popytu na kaflu, np. „18 sprzedanych / 30 dni" (tylko cennik)
 }
 
+// --- Dowód, że cena to luka („Dlaczego ta cena to luka") — dorota-type ---
+// Dwa sygnały liczone z danych, rozróżniające świadomy pricing od zapomnianej
+// ceny (analogicznie do „Dlaczego ten produkt wraca" przy zwrotach):
+// (1) stagnacja ceny — czas od ostatniej zmiany + ruch mediany podkategorii w tym
+//     czasie; (2) pozycja w rozkładzie podkategorii zamiast samego „−X% vs mediana".
+
+export interface PriceStagnationSignal {
+  monthsSinceChange: number; // ile miesięcy od ostatniej zmiany ceny tego SKU
+  categoryMedianMovePct: number; // ruch mediany podkategorii w tym czasie (np. 9 → +9%)
+}
+
+export interface PriceDistributionSignal {
+  percentile: number; // pozycja ceny w rozkładzie podkategorii (0–100; 15 → najtańsze 15%)
+  sample: BenchmarkSample; // ta sama reguła liczności/fallbacku co benchmark zewnętrzny
+}
+
+// Oba pola opcjonalne — slot renderuje się tylko, gdy któryś sygnał przejdzie progi.
+export interface PriceGapData {
+  stagnation?: PriceStagnationSignal;
+  distribution?: PriceDistributionSignal;
+}
+
 export interface SellerRecommendation {
   id: string;
   category: RecommendationCategory;
@@ -80,6 +102,7 @@ export interface SellerRecommendation {
   contextExplanation: string;
   affectedProductRows: AffectedProductRow[];
   actionStep: ActionStep;
+  priceGapData?: PriceGapData; // slot „Dlaczego ta cena to luka" (tylko cennik; brak → nie renderujemy)
 }
 
 export interface SellerProductRow {
@@ -107,6 +130,73 @@ export interface ReturnsActionOption {
   insight: string;
 }
 
+// --- Powód zwrotu („Dlaczego ten produkt wraca") ---
+// Top 1–2 powody zwrotu SKU znormalizowane do zamkniętej taksonomii. Z udziałem %,
+// próbką i widoczną linią źródła. Akcja na karcie wynika z top powodu (patrz
+// resolveReturnReasons w lib/return-reasons.ts).
+
+export type ReturnReasonCode =
+  | "rozmiar"
+  | "jakosc"
+  | "kolor"
+  | "niezgodnosc_z_opisem"
+  | "zmiana_decyzji"
+  | "logistyka"
+  | "inne";
+
+// Próbka WŁASNYCH zwrotów sellera (nie mediana zewnętrzna — inny tekst niż BenchmarkSample).
+export interface ReturnReasonSample {
+  returnsWithReason: number; // ile zwrotów miało przypisany powód — mianownik udziału
+  totalReturns: number; // wszystkie zwroty SKU w oknie
+  windowDays?: number; // domyślnie 90
+  sourceLabel: string; // linia źródła, np. „ankiety pozwrotowe i powody przy zwrocie"
+}
+
+export interface ReturnReason {
+  code: ReturnReasonCode;
+  label: string; // gotowa etykieta PL do UI, np. „Niedopasowanie rozmiaru"
+  sharePct: number; // udział % wśród zwrotów z przyczyną (0–100)
+  returnsCount: number; // liczba zwrotów z tym powodem
+}
+
+export interface SizeReturnRate {
+  size: string; // „S" | „M" | „L" | „XL" ...
+  returns: number; // licznik
+  sold: number; // mianownik
+  ratePct: number; // RR per rozmiar (returns/sold*100)
+  high: boolean; // czerwone — RR powyżej progu (ustawiane w resolverze)
+}
+
+export interface SizeBreakdown {
+  rows: SizeReturnRate[]; // sortowane malejąco po ratePct (NIE po liczbie zwrotów)
+  gridDirection: "up" | "down" | "mixed"; // kierunek korekty siatki
+  diagnosis: string; // np. „Siatka rozmiarów wychodzi za duża"
+  sample: ReturnReasonSample; // źródło + próbka (zawsze widoczne)
+}
+
+// Typ akcji steruje renderem karty i nazwą eventu PostHog.
+export type ReasonActionKind =
+  | "fix_size_table" // rozmiar → popraw tabelę rozmiarów (+ drill-down)
+  | "qc_batch" // jakość → zgłoś do QC / rozważ wycofanie; NIGDY edycja karty
+  | "fix_listing" // niezgodnosc_z_opisem / kolor → popraw opis i zdjęcia
+  | "no_fix" // zmiana_decyzji → brak akcji naprawczej
+  | "diagnostic"; // poniżej progu → ankieta, akcja diagnostyczna
+
+export interface ReasonDrivenAction {
+  kind: ReasonActionKind;
+  title: string;
+  insight: string;
+  quote?: string; // sugerowany dopisek do opisu produktu (render italic)
+  ctaLabel?: string; // brak dla no_fix
+  wozEvent?: string; // nazwa eventu PostHog dla atrapy
+}
+
+export interface ReturnReasonsData {
+  reasons: ReturnReason[]; // znormalizowane, malejąco po sharePct
+  sample: ReturnReasonSample; // próbka całości rozbicia + źródło
+  sizeBreakdown?: SizeBreakdown; // obecne tylko gdy zebrane (render tylko gdy powód = rozmiar)
+}
+
 export interface ReturnsActionCard {
   // Chip na dashboardzie
   chipTitle: string;
@@ -123,6 +213,7 @@ export interface ReturnsActionCard {
   meaning: string;
   products: ReturnsProductRow[];
   options: ReturnsActionOption[];
+  reasonsData?: ReturnReasonsData; // blok „Dlaczego ten produkt wraca" (opcjonalny — brak → render jak dawniej)
   verification: {
     testWindow: string;
     keepRule: string;

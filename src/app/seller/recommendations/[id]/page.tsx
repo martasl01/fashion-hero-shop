@@ -6,6 +6,8 @@ import { sellerRecommendations } from "@/data/seller-dashboard";
 import { products } from "@/data/products";
 import { MetricTile } from "@/components/seller/metric-tile";
 import { AffectedProductsTable } from "@/components/seller/affected-products-table";
+import { PriceGapEvidence } from "@/components/seller/price-gap-evidence";
+import { resolvePriceGap } from "@/lib/price-gap";
 
 const backRoutes: Record<string, string> = {
   "one-action": "/seller/one-action",
@@ -28,6 +30,11 @@ export default async function RecommendationDetailPage({ params, searchParams }:
   const rec = sellerRecommendations.find((r) => r.id === id);
 
   if (!rec) notFound();
+
+  // Slot „Dlaczego ta cena to luka" — tylko cennik. Brak dowodu (świeża cena /
+  // środek rozkładu) → slot nie renderuje, a rekomendacja jest stonowana.
+  const priceGap =
+    rec.category === "cennik" && rec.priceGapData ? resolvePriceGap(rec.priceGapData) : null;
 
   const primaryProductImage =
     rec.primaryProduct.imageSrc ||
@@ -101,6 +108,11 @@ export default async function RecommendationDetailPage({ params, searchParams }:
         </div>
       </section>
 
+      {/* Dlaczego ta cena to luka (tylko cennik, gdy są sygnały dowodowe) */}
+      {priceGap?.hasEvidence && (
+        <PriceGapEvidence stagnation={priceGap.stagnation} distribution={priceGap.distribution} />
+      )}
+
       {/* Co to znaczy */}
       <section className="flex flex-col gap-3">
         <h2 className="text-[17px] font-semibold text-charcoal">Co to znaczy</h2>
@@ -110,6 +122,14 @@ export default async function RecommendationDetailPage({ params, searchParams }:
       {/* Co możesz zrobić */}
       <section className="flex flex-col gap-4">
         <h2 className="text-[17px] font-semibold text-charcoal">Co możesz zrobić</h2>
+
+        {/* Brak dowodu luki → rekomendacja stonowana, bez nacisku na podwyżkę */}
+        {priceGap && !priceGap.hasEvidence && (
+          <p className="text-[13px] text-warm-gray leading-relaxed">
+            Nie widzimy dowodu, że to zapomniana cena — możliwe, że to świadomy wybór. Potraktuj
+            podwyżkę jako opcjonalny test, nie pewną lukę.
+          </p>
+        )}
 
         <div className="border border-black/10 rounded-xl overflow-hidden bg-cream-light">
           <div className="p-5 flex flex-col gap-1.5">

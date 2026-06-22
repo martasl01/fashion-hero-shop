@@ -3,10 +3,16 @@ import Image from "next/image";
 import { ChevronLeft, Check, RotateCcw, ArrowRight } from "lucide-react";
 import { returnsAction } from "@/data/seller-dashboard";
 import { MetricTile } from "@/components/seller/metric-tile";
+import { ReturnReasonsBlock } from "@/components/seller/return-reasons-block";
+import { SizeBreakdownTable } from "@/components/seller/size-breakdown-table";
+import { ReasonDrivenAction } from "@/components/seller/reason-driven-action";
+import { resolveReturnReasons } from "@/lib/return-reasons";
 
 export default function ReturnsActionPage() {
   const rec = returnsAction;
   const product = rec.products[0];
+  // Powód zwrotu steruje blokiem akcji. Brak danych powodów → render jak dawniej (fallback).
+  const resolution = rec.reasonsData ? resolveReturnReasons(rec.reasonsData) : null;
 
   return (
     <div className="p-8 max-w-5xl flex flex-col gap-10">
@@ -63,56 +69,81 @@ export default function ReturnsActionPage() {
         </div>
       </section>
 
-      {/* Co to znaczy */}
-      <section className="flex flex-col gap-3">
-        <h2 className="text-[17px] font-semibold text-charcoal">Co to znaczy</h2>
-        <p className="text-[14px] text-charcoal leading-relaxed max-w-prose">{rec.meaning}</p>
-      </section>
+      {/* Dlaczego wraca → rozmiary → co to znaczy → akcja (sterowane top powodem) */}
+      {resolution ? (
+        <>
+          {/* W trybie diagnostycznym nie pokazujemy rozbicia powodów — nie zgadujemy */}
+          {resolution.mode === "actionable" && (
+            <ReturnReasonsBlock reasons={resolution.reasons} sample={resolution.sample} />
+          )}
+          {resolution.showSizeBreakdown && resolution.sizeBreakdown && (
+            <SizeBreakdownTable
+              breakdown={resolution.sizeBreakdown}
+              comparison={resolution.sizeComparison}
+            />
+          )}
+          {resolution.meaning && (
+            <section className="flex flex-col gap-3">
+              <h2 className="text-[17px] font-semibold text-charcoal">Co to znaczy</h2>
+              <p className="text-[14px] text-charcoal leading-relaxed max-w-prose">
+                {resolution.meaning}
+              </p>
+            </section>
+          )}
+          <ReasonDrivenAction action={resolution.action} product={product} />
+        </>
+      ) : (
+        /* Fallback: brak danych powodów → generyczne „Co to znaczy" + opcje + blok SKU */
+        <>
+          <section className="flex flex-col gap-3">
+            <h2 className="text-[17px] font-semibold text-charcoal">Co to znaczy</h2>
+            <p className="text-[14px] text-charcoal leading-relaxed max-w-prose">{rec.meaning}</p>
+          </section>
+          <section className="flex flex-col gap-4">
+            <h2 className="text-[17px] font-semibold text-charcoal">Co możesz zrobić</h2>
+            <div className="border border-black/10 rounded-xl overflow-hidden bg-cream-light">
+              {rec.options.map((option, index) => (
+                <div key={option.title}>
+                  {index > 0 && <div className="border-t border-black/10" />}
+                  <div className="p-5 flex flex-col gap-1.5">
+                    <span className="text-[14px] font-semibold text-charcoal flex items-center gap-2">
+                      <ArrowRight size={16} className="text-charcoal flex-shrink-0" />
+                      {option.title}
+                    </span>
+                    <span className="text-[13px] text-warm-gray leading-relaxed pl-6">
+                      {option.insight}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
 
-      {/* Co możesz zrobić */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-[17px] font-semibold text-charcoal">Co możesz zrobić</h2>
-        <div className="border border-black/10 rounded-xl overflow-hidden bg-cream-light">
-          {rec.options.map((option, index) => (
-            <div key={option.title}>
-              {index > 0 && <div className="border-t border-black/10" />}
-              <div className="p-5 flex flex-col gap-1.5">
-                <span className="text-[14px] font-semibold text-charcoal flex items-center gap-2">
-                  <ArrowRight size={16} className="text-charcoal flex-shrink-0" />
-                  {option.title}
-                </span>
-                <span className="text-[13px] text-warm-gray leading-relaxed pl-6">
-                  {option.insight}
-                </span>
+            {/* Blok SKU */}
+            <div className="border border-black/10 rounded-xl overflow-hidden bg-cream-light">
+              <div className="p-5 flex items-center gap-3.5">
+                <Image
+                  src={product.imageSrc}
+                  alt={product.name}
+                  width={48}
+                  height={48}
+                  className="rounded-md object-cover flex-shrink-0"
+                />
+                <div className="flex flex-col gap-0.5 flex-1">
+                  <span className="text-[14px] font-semibold text-charcoal">{product.name}</span>
+                  <span className="text-[12px] text-warm-gray">SKU: {product.sku}</span>
+                </div>
+                <Link
+                  href={`/seller/products/${product.sku}/edit`}
+                  className="flex items-center gap-1 text-[13px] font-medium text-charcoal border border-black/15 rounded-lg px-3 py-2 hover:bg-black/5 transition-colors flex-shrink-0"
+                >
+                  Przejdź do produktu
+                  <ArrowRight size={14} />
+                </Link>
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* Blok SKU */}
-        <div className="border border-black/10 rounded-xl overflow-hidden bg-cream-light">
-          <div className="p-5 flex items-center gap-3.5">
-            <Image
-              src={product.imageSrc}
-              alt={product.name}
-              width={48}
-              height={48}
-              className="rounded-md object-cover flex-shrink-0"
-            />
-            <div className="flex flex-col gap-0.5 flex-1">
-              <span className="text-[14px] font-semibold text-charcoal">{product.name}</span>
-              <span className="text-[12px] text-warm-gray">SKU: {product.sku}</span>
-            </div>
-            <Link
-              href={`/seller/products/${product.sku}/edit`}
-              className="flex items-center gap-1 text-[13px] font-medium text-charcoal border border-black/15 rounded-lg px-3 py-2 hover:bg-black/5 transition-colors flex-shrink-0"
-            >
-              Przejdź do produktu
-              <ArrowRight size={14} />
-            </Link>
-          </div>
-        </div>
-      </section>
+          </section>
+        </>
+      )}
 
       {/* Jak sprawdzić zmianę */}
       <section className="flex flex-col gap-4">
