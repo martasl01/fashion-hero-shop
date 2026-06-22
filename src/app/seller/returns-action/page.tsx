@@ -104,7 +104,7 @@ export default function ReturnsActionPage() {
               <span className="text-[12px] text-warm-gray">SKU: {product.sku}</span>
             </div>
             <Link
-              href={`/seller/products/${product.sku}/edit`}
+              href={`/seller/products/${product.sku}/edit?from=returns`}
               className="flex items-center gap-1 text-[13px] font-medium text-charcoal border border-black/15 rounded-lg px-3 py-2 hover:bg-black/5 transition-colors flex-shrink-0"
             >
               Przejdź do produktu

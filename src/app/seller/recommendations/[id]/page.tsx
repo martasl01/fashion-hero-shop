@@ -133,7 +133,7 @@ export default async function RecommendationDetailPage({ params, searchParams }:
               <span className="text-[12px] text-warm-gray">SKU: {rec.primaryProduct.sku}</span>
             </div>
             <Link
-              href={`/seller/products/${rec.primaryProduct.productSlug}/edit`}
+              href={`/seller/products/${rec.primaryProduct.productSlug}/edit?recId=${rec.id}`}
               className="flex items-center gap-1 text-[13px] font-medium text-charcoal border border-black/15 rounded-lg px-3 py-2 hover:bg-black/5 transition-colors flex-shrink-0"
             >
               Przejdź do produktu
