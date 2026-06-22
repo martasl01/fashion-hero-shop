@@ -42,7 +42,6 @@ export const sellerRecommendations: SellerRecommendation[] = [
     title: "Twoja cena jest poniżej mediany podkategorii",
     insightShort: "Mediana podkategorii klapki i japonki: 215 zł. Twoja cena: 189 zł (−12%). Masz przestrzeń na podwyżkę.",
     ctaLabel: "Podnieś ceny",
-    metricsTimeNote: "Mediana ceny liczona z ostatnich 90 dni (sellerzy z RR <12%).",
     primaryProduct: {
       name: "Urban Slip-On",
       sku: "201",
@@ -50,8 +49,17 @@ export const sellerRecommendations: SellerRecommendation[] = [
       category: "Buty > Klapki i japonki",
       productSlug: "urban-slip-on-fashionmf",
     },
-    yourResultTile: { label: "Twoja cena (Urban Slip-On)", value: "189 zł" },
-    benchmarkTile: { label: "Benchmark", value: "215 zł", sub: "Mediana podkategorii: klapki i japonki" },
+    yourResultTile: {
+      label: "Twoja cena (Urban Slip-On)",
+      value: "189 zł",
+      sub: "Mediana ceny liczona z ostatnich 90 dni (sellerzy z RR <12%).",
+    },
+    benchmarkTile: {
+      label: "Benchmark",
+      value: "215 zł",
+      sub: "Mediana podkategorii: klapki i japonki",
+      sample: { sellers: 14, products: 24, granularity: "podkategorii «klapki i japonki»" },
+    },
     financialEffectTile: { label: "Rekomendowana cena testowa", value: "208 zł", sub: "+10% na 2 tygodnie" },
     contextExplanation:
       "Twój produkt w podkategorii klapki i japonki może wyglądać na tańszy w porównaniu z ofertą konkurencji. To może być świadomy wybór cenowy albo niezamierzona luka — cena nie była aktualizowana od dłuższego czasu.",
@@ -82,7 +90,6 @@ export const sellerRecommendations: SellerRecommendation[] = [
     title: "Zwroty zjadają marżę na Kopertowej Midi",
     insightShort: "Kopertowa Midi: zwroty 41%, mediana kategorii 14%. Każda sprzedaż generuje stratę −12 zł.",
     ctaLabel: "Wycofaj produkt",
-    metricsTimeNote: "Return rate liczymy na zamówieniach sprzed co najmniej 30 dni, patrząc wstecz do ~90 dni.",
     primaryProduct: {
       name: "Kopertowa Midi",
       sku: "202",
@@ -90,8 +97,16 @@ export const sellerRecommendations: SellerRecommendation[] = [
       category: "Sukienki",
       productSlug: "kopertowa-midi-fashionmf",
     },
-    yourResultTile: { label: "Zwroty Kopertowej Midi", value: "41%" },
-    benchmarkTile: { label: "Mediana zwrotów w Sukienkach", value: "14%" },
+    yourResultTile: {
+      label: "Zwroty Kopertowej Midi",
+      value: "41%",
+      sub: "Return rate liczymy na zamówieniach sprzed co najmniej 30 dni, patrząc wstecz do ~90 dni.",
+    },
+    benchmarkTile: {
+      label: "Mediana zwrotów w Sukienkach",
+      value: "14%",
+      sample: { sellers: 11, products: 19, granularity: "kategorii «Sukienki»" },
+    },
     financialEffectTile: { label: "Strata na tym SKU", value: "−12 zł / szt.", sub: "Każda sprzedaż generuje stratę po zwrocie" },
     contextExplanation:
       "Wysoki wskaźnik zwrotów może wynikać z opisu rozmiaru niezgodnego z rzeczywistością lub ze zdjęcia nieodpowiadającego fasoniowi. To może być jednorazowy spike albo systemowy problem z tym modelem.",
@@ -130,7 +145,13 @@ export const sellerRecommendations: SellerRecommendation[] = [
       productSlug: "torebka-mini-skorzana-fashionmf",
     },
     yourResultTile: { label: "Zdjęcia na Torebce Mini", value: "3 zdjęcia" },
-    benchmarkTile: { label: "Mediana zdjęć w Torebkach", value: "6 zdjęć" },
+    benchmarkTile: {
+      label: "Mediana zdjęć w Torebkach",
+      value: "6 zdjęć",
+      // Przypadek eskalacji: podkategoria „torebki na ramię" miała za mało sprzedawców
+      // (poniżej progu) → benchmark policzony o poziom wyżej, na kategorii „Torebki".
+      sample: { sellers: 12, products: 31, granularity: "kategorii «Torebki»", escalated: true },
+    },
     financialEffectTile: { label: "Różnica", value: "−3 zdjęcia (−50%)" },
     contextExplanation:
       "Algorytm FashionHero preferuje listingi z co najmniej 6 zdjęciami w wynikach wyszukiwania. Produkty z mniejszą liczbą zdjęć są niżej w rankingu, co przekłada się bezpośrednio na liczbę kliknięć. To może być świadomy wybór albo przeoczenie przy dodawaniu produktu.",
@@ -166,13 +187,16 @@ export const returnsAction: ReturnsActionCard = {
   subcategory: "sukienki letnie",
   categoryPath: "Odzież > Sukienki letnie",
   h1: "Sukienka letnia midi wraca częściej niż reszta Twojego asortymentu",
-  metricsTimeNote:
-    "Return rate liczymy na zamówieniach sprzed co najmniej 30 dni, patrząc wstecz do ~90 dni.",
-  yourResultTile: { label: "Twoje zwroty na tym SKU", value: "34%" },
+  yourResultTile: {
+    label: "Twoje zwroty na tym SKU",
+    value: "34%",
+    sub: "Return rate liczymy na zamówieniach sprzed co najmniej 30 dni, patrząc wstecz do ~90 dni.",
+  },
   benchmarkTile: {
     label: "Benchmark",
     value: "18%",
     sub: "Mediana podkategorii: sukienki letnie",
+    sample: { sellers: 13, products: 22, granularity: "podkategorii «sukienki letnie»" },
   },
   costTile: {
     label: "Ile kosztują Cię zwroty",

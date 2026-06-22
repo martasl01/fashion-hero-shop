@@ -52,11 +52,13 @@ export default function ReturnsActionPage() {
       <section className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
           <h2 className="text-[17px] font-semibold text-charcoal">Co mówią liczby</h2>
-          <p className="text-[13px] text-warm-gray">{rec.metricsTimeNote}</p>
+          {rec.metricsTimeNote && (
+            <p className="text-[13px] text-warm-gray">{rec.metricsTimeNote}</p>
+          )}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <MetricTile metric={{ id: "result", label: rec.yourResultTile.label, value: rec.yourResultTile.value }} />
-          <MetricTile metric={{ id: "benchmark", label: rec.benchmarkTile.label, value: rec.benchmarkTile.value, sub: rec.benchmarkTile.sub }} />
+          <MetricTile metric={{ id: "result", label: rec.yourResultTile.label, value: rec.yourResultTile.value, sub: rec.yourResultTile.sub }} />
+          <MetricTile metric={{ id: "benchmark", label: rec.benchmarkTile.label, value: rec.benchmarkTile.value, sub: rec.benchmarkTile.sub, sample: rec.benchmarkTile.sample }} />
           <MetricTile metric={{ id: "cost", label: rec.costTile.label, value: rec.costTile.value, sub: rec.costTile.sub }} />
         </div>
       </section>

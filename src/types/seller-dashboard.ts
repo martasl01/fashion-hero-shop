@@ -10,16 +10,29 @@ export interface SellerMetric {
   label: string;
   value: string;
   sub?: string;
+  sample?: BenchmarkSample;
 }
 
 export type ProductStockStatus = "active" | "low-stock" | "out-of-stock" | "draft";
 
 export type RecommendationCategory = "rentowność" | "cennik" | "listing";
 
+// Liczność próby, na której policzono benchmark ZEWNĘTRZNY (mediana z innych
+// sprzedawców). Uwiarygodnia benchmark liczbą sprzedawców w próbce.
+// Liczone na unikalnych sprzedawcach (nie ofertach), oferty samego sellera wykluczone.
+export interface BenchmarkSample {
+  sellers: number; // unikalni sprzedawcy — liczba główna
+  products: number; // podobne produkty — uzupełnienie
+  granularity: string; // poziom granulacji, np. "podkategorii «klapki i japonki»"
+  windowDays?: number; // okno czasowe; domyślnie 90
+  escalated?: boolean; // true gdy policzono o poziom wyżej (podkategoria poniżej progu)
+}
+
 export interface MetricTileData {
   label: string;
   value: string;
   sub?: string;
+  sample?: BenchmarkSample; // tylko dla benchmarku zewnętrznego — renderuje linijkę liczności
 }
 
 export interface AffectedProductRow {
@@ -56,7 +69,7 @@ export interface SellerRecommendation {
   title: string;
   insightShort: string;
   ctaLabel: string;
-  metricsTimeNote: string;
+  metricsTimeNote?: string;
   primaryProduct: PrimaryProduct;
   yourResultTile: MetricTileData;
   benchmarkTile: MetricTileData;
@@ -100,7 +113,7 @@ export interface ReturnsActionCard {
   subcategory: string; // poziom podkategorii, na którym liczony jest benchmark
   categoryPath: string; // ścieżka kategorii w nagłówku produktu (np. „Odzież > Sukienki letnie")
   h1: string;
-  metricsTimeNote: string; // kontekst czasowy liczenia return rate
+  metricsTimeNote?: string; // kontekst czasowy liczenia return rate
   yourResultTile: MetricTileData;
   benchmarkTile: MetricTileData;
   costTile: MetricTileData;

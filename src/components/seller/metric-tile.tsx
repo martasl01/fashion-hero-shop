@@ -1,5 +1,5 @@
 import type { SellerMetric } from "@/types/seller-dashboard";
-import { cn } from "@/lib/utils";
+import { cn, formatBenchmarkSample } from "@/lib/utils";
 
 interface MetricTileProps {
   metric: SellerMetric;
@@ -17,6 +17,11 @@ export function MetricTile({ metric, className }: MetricTileProps) {
       </span>
       {metric.sub && (
         <span className="text-[13px] text-warm-gray">{metric.sub}</span>
+      )}
+      {metric.sample && (
+        <span className="text-[12px] text-warm-gray/80 leading-snug mt-0.5">
+          {formatBenchmarkSample(metric.sample)}
+        </span>
       )}
     </div>
   );
