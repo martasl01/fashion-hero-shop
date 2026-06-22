@@ -5,7 +5,7 @@ import {
   timeRangeOptions,
   sellerProductRows,
   sellerRecommendations,
-  pricingSkuInputs,
+  pricingWidgetInputs,
 } from "@/data/seller-dashboard";
 import { MetricTiles } from "@/components/seller/metric-tiles";
 import { ProductsTable } from "@/components/seller/products-table";
@@ -28,7 +28,7 @@ export default function SellerDashboardPage() {
               subheadline="Ty decydujesz, co zmienić – my tylko liczymy. Co tydzień pokażemy Ci jedną akcję opartą na danych z Twojego sklepu, żeby z tej samej sprzedaży zostawało Ci więcej."
             />
 
-            <PricingRecommendationsWidget products={sellerProducts} inputs={pricingSkuInputs} />
+            <PricingRecommendationsWidget products={sellerProducts} inputs={pricingWidgetInputs} />
 
             <MetricTiles metrics={sellerMetrics} timeRangeOptions={timeRangeOptions} />
 

@@ -6,6 +6,11 @@ import type {
   ReturnsActionCard,
   PricingSkuInput,
 } from "@/types/seller-dashboard";
+import { products } from "@/data/products";
+import {
+  pickTopPricingSku,
+  buildCennikRecommendation,
+} from "@/lib/pricing-recommendation-card";
 
 export const DASHBOARD_SELLER_ID = "s13";
 
@@ -63,55 +68,27 @@ export const pricingSkuInputs: PricingSkuInput[] = [
   { productId: "210", cena: 240, mediana: 215, n: 14, pozycja: 0.85, dniOdZmiany: 300, ruchMedianyPct: 0, popytWysoki: false, zalega: false },
 ];
 
+// Nagłówkowa rekomendacja cennikowa („Akcja na ten tydzień") WYNIKA z silnika:
+// top pick wg priorytetu przyczyny, a kartę składa warstwa prezentacji z werdyktu
+// + danych SKU (zamiast ręcznej narracji). Reszta rekomendowanych SKU idzie do
+// sekcji „Rekomendacje cenowe" (pricingWidgetInputs, bez duplikatu top picku).
+const topPricingSku = pickTopPricingSku(pricingSkuInputs);
+const topPricingProduct = topPricingSku
+  ? products.find((p) => p.id === topPricingSku.input.productId)
+  : undefined;
+const cennikRecommendation =
+  topPricingSku && topPricingProduct
+    ? buildCennikRecommendation(topPricingSku.input, topPricingProduct, topPricingSku.verdict)
+    : null;
+
+// Wejście dla sekcji „Rekomendacje cenowe" — pozostałe SKU (top pick jest już
+// nagłówkową kartą). Widget i tak filtruje wewnętrznie do „recommended".
+export const pricingWidgetInputs: PricingSkuInput[] = pricingSkuInputs.filter(
+  (i) => i.productId !== topPricingSku?.input.productId
+);
+
 export const sellerRecommendations: SellerRecommendation[] = [
-  {
-    id: "1",
-    category: "cennik",
-    title: "Twoja cena jest poniżej mediany podkategorii",
-    insightShort: "Mediana podkategorii klapki i japonki: 215 zł. Twoja cena: 189 zł (−12%). Masz przestrzeń na podwyżkę.",
-    ctaLabel: "Podnieś ceny",
-    primaryProduct: {
-      name: "Urban Slip-On",
-      sku: "201",
-      imageSrc: "/images/products/product-2.jpg",
-      category: "Buty > Klapki i japonki",
-      productSlug: "urban-slip-on-fashionmf",
-    },
-    yourResultTile: {
-      label: "Twoja cena (Urban Slip-On)",
-      value: "189 zł",
-      sub: "Mediana ceny liczona z ostatnich 90 dni (sellerzy z RR <12%).",
-    },
-    benchmarkTile: {
-      label: "Benchmark",
-      value: "215 zł",
-      sub: "Mediana podkategorii: klapki i japonki",
-      sample: { sellers: 14, products: 24, granularity: "podkategorii «klapki i japonki»" },
-    },
-    financialEffectTile: { label: "Rekomendowana cena testowa", value: "208 zł", sub: "+10% na 2 tygodnie" },
-    contextExplanation:
-      "Twój produkt w podkategorii klapki i japonki może wyglądać na tańszy w porównaniu z ofertą konkurencji. To może być świadomy wybór cenowy albo niezamierzona luka — cena nie była aktualizowana od dłuższego czasu.",
-    affectedProductRows: [
-      {
-        name: "Urban Slip-On",
-        sku: "201",
-        productSlug: "urban-slip-on-fashionmf",
-        category: "Buty",
-        price: "189 zł",
-        yourValue: "189 zł",
-        benchmarkValue: "215 zł",
-        difference: "−12%",
-      },
-    ],
-    actionStep: {
-      action: "Podnieś cenę o 10% (z 189 zł do ~208 zł) na 2 tygodnie i sprawdź, czy utarg wzrośnie.",
-      actionInsight: "Nawet po podwyżce zostajesz poniżej mediany podkategorii (215 zł), więc ryzyko spadku zamówień jest niewielkie.",
-      testWindow: "2 tygodnie",
-      successMetric: "Utarg z Urban Slip-On (cena × liczba zamówień), nie sama liczba zamówień",
-      keepRule: "utarg w górę → zostaw cenę i możesz powtórzyć na kolejnym produkcie",
-      revertRule: "utarg w dół → wróć do 189 zł",
-    },
-  },
+  ...(cennikRecommendation ? [cennikRecommendation] : []),
   {
     id: "2",
     category: "rentowność",
