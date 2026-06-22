@@ -19,23 +19,32 @@ export const PRICING_THRESHOLDS = {
   MID_BAND_HIGH: 0.75,
 } as const;
 
-// Teksty kart — jeden szablon na przyczynę. deliberate/no_evidence nie mają
-// tekstu (cisza). Trzymane przy silniku, bo wynikają wprost z przyczyny.
-const DEMAND_TEXT =
-  "Schodzi szybko mimo niskiej ceny. Rynek zniósłby więcej → przetestuj podwyżkę.";
-const TOO_EXPENSIVE_TEXT =
-  "Powyżej mediany i nie sprzedaje się. Cena może odstraszać → rozważ obniżkę.";
+// Teksty kart — „wariant krótki" ze speca (gęsty listing). Zasada redakcyjna:
+// tylko kierunek + liczby diagnostyczne (od ilu mies. stoi, o ile odstaje), NIGDY
+// cena docelowa ani „o ile zmienić". deliberate/no_evidence nie mają tekstu (cisza).
+// Odchylenie liczone tu, bo wariant krótki Popytu/Za drogo podaje % odstępu od rynku.
+function deviationPct(sku: PricingSkuInput): number {
+  return Math.round((Math.abs(sku.mediana - sku.cena) / sku.mediana) * 100);
+}
 
 // SKU poza testem (walidacja albo niespełniony warunek wejścia) — milczymy.
 function excluded(): PricingRecommendation {
   return { status: "excluded", reasonCode: "out_of_test", direction: "hold", text: null };
 }
 
-// „Cena stoi od 14 mies., rynek wzrósł o 9%. Najtańsza na rynku → rozważ podwyżkę."
+// „Cena bez zmian 14 mies., rynek +9%, jesteś najtańszy → rozważ podwyżkę."
 // Czyta się jako zapomniana cena (ktoś jej nie ruszał, a rynek odjechał), nie „inni drożej".
 function forgottenPriceText(sku: PricingSkuInput): string {
   const months = Math.round(sku.dniOdZmiany / 30);
-  return `Cena stoi od ${months} mies., rynek wzrósł o ${sku.ruchMedianyPct}%. Najtańsza na rynku → rozważ podwyżkę.`;
+  return `Cena bez zmian ${months} mies., rynek +${sku.ruchMedianyPct}%, jesteś najtańszy → rozważ podwyżkę.`;
+}
+
+function demandText(sku: PricingSkuInput): string {
+  return `Schodzi szybko, a jest ${deviationPct(sku)}% taniej → przetestuj podwyżkę.`;
+}
+
+function tooExpensiveText(sku: PricingSkuInput): string {
+  return `${deviationPct(sku)}% powyżej rynku i zalega → rozważ obniżkę.`;
 }
 
 // Klasyfikuje SKU na jedną rekomendację. Wejście jest już kompletne (brak danych →
@@ -87,7 +96,7 @@ export function resolvePricingRecommendation(sku: PricingSkuInput): PricingRecom
       status: "recommended",
       reasonCode: "demand",
       direction: "raise",
-      text: DEMAND_TEXT,
+      text: demandText(sku),
     };
   }
 
@@ -97,7 +106,7 @@ export function resolvePricingRecommendation(sku: PricingSkuInput): PricingRecom
       status: "recommended",
       reasonCode: "too_expensive",
       direction: "lower",
-      text: TOO_EXPENSIVE_TEXT,
+      text: tooExpensiveText(sku),
     };
   }
 

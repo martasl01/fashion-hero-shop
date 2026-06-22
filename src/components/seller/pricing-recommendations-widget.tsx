@@ -62,7 +62,7 @@ export function PricingRecommendationsWidget({
         </div>
         <p className="text-[13px] text-warm-gray max-w-[65ch]">
           Sprawdzamy, które ceny odstają od rynku, i podpowiadamy kierunek. Ty
-          decydujesz, czy i o ile zmienić cenę.
+          decydujesz, czy zmienić cenę.
         </p>
       </div>
 
@@ -76,7 +76,8 @@ export function PricingRecommendationsWidget({
           {recommended.map(({ input, product, rec }) => {
             const raise = rec.direction === "raise";
             const Icon = raise ? TrendingUp : TrendingDown;
-            const ctaLabel = raise ? "Podnieś cenę" : "Obniż cenę";
+            // „Tylko kierunek": przycisk nie podaje akcji cenowej — to lekka atrapa WoZ.
+            const ctaLabel = "Oznacz jako sprawdzone";
             return (
               <div
                 key={input.productId}
@@ -110,6 +111,13 @@ export function PricingRecommendationsWidget({
             );
           })}
         </div>
+      )}
+
+      {recommended.length > 0 && (
+        <p className="text-[12px] text-warm-gray italic">
+          Rekomendacje wskazują kierunek, nie konkretną cenę. Decyzja należy do
+          Ciebie.
+        </p>
       )}
     </div>
   );
