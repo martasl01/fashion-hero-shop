@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Tag, TrendingDown, Package, CheckCircle } from "lucide-react";
 import type { SellerRecommendation } from "@/types/seller-dashboard";
 import { useCompletedActions } from "@/hooks/use-completed-actions";
+import { DemandSignal } from "./demand-signal";
 
 const categoryIcons: Record<SellerRecommendation["category"], React.ReactNode> = {
   cennik: <Tag size={13} />,
@@ -63,6 +64,9 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
         />
         <span className="text-[11px] text-warm-gray">SKU: {primaryProduct.sku}</span>
       </div>
+      {category === "cennik" && primaryProduct.demandSignal && (
+        <DemandSignal text={primaryProduct.demandSignal} />
+      )}
       <p className="text-[12px] text-warm-gray leading-relaxed flex-1">{insightShort}</p>
       <Link
         href={`/seller/recommendations/${id}`}

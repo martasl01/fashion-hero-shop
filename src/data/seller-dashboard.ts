@@ -187,7 +187,7 @@ export const sellerRecommendations: SellerRecommendation[] = [
 export const returnsAction: ReturnsActionCard = {
   chipTitle: "Jeden produkt odpowiada za większość Twoich zwrotów",
   chipInsight:
-    "Sukienka letnia midi wraca w 34% — przy 18% w podkategorii. Te zwroty kosztują Cię ~1 200 zł na obniżonej odsprzedaży i zamrożonym towarze.",
+    "Sukienka letnia midi wraca w 34% — przy 18% w podkategorii. Te zwroty kosztują Cię ~425 zł na obniżonej odsprzedaży i zamrożonym towarze.",
   chipCta: "Ogranicz zwroty",
   subcategory: "sukienki letnie",
   categoryPath: "Odzież > Sukienki letnie",
@@ -205,8 +205,8 @@ export const returnsAction: ReturnsActionCard = {
   },
   costTile: {
     label: "Ile kosztują Cię zwroty",
-    value: "~1 200 zł",
-    sub: "Te 142 zwroty. Średnio na każdym tracisz ~8,50 zł — między obniżoną odsprzedażą a towarem zamrożonym do następnego sezonu.",
+    value: "~425 zł",
+    sub: "Te 50 zwrotów. Średnio na każdym tracisz ~8,50 zł — między obniżoną odsprzedażą a towarem zamrożonym do następnego sezonu.",
   },
   meaning:
     "Co trzecia sztuka tego produktu wraca. To może być świadomy wybór (np. trudny do dopasowania krój) albo niezamierzona luka (brakująca tabela rozmiarów, słabe zdjęcia). Najczęstszy powód zwrotów w tej podkategorii to niedopasowanie rozmiaru.",
@@ -230,10 +230,49 @@ export const returnsAction: ReturnsActionCard = {
       insight: "Kupujący częściej dodają takie produkty do koszyka.",
     },
   ],
+  // Powód zwrotu — scenariusz A (powód = rozmiar). Dane zamockowane (prototyp WoZ).
+  reasonsData: {
+    reasons: [
+      {
+        code: "rozmiar",
+        label: "Rozmiar / dopasowanie",
+        sharePct: 58,
+        returnsCount: 29,
+      },
+      {
+        code: "jakosc",
+        label: "Jakość / wykonanie",
+        sharePct: 18,
+        returnsCount: 9,
+      },
+    ],
+    sample: {
+      returnsWithReason: 50,
+      totalReturns: 50,
+      windowDays: 90,
+      sourceLabel: "komentarzy kupujących na FashionHero (klasyfikacja automatyczna)",
+    },
+    sizeBreakdown: {
+      rows: [
+        { size: "S", returns: 18, sold: 40, ratePct: 45, high: false },
+        { size: "M", returns: 27, sold: 70, ratePct: 39, high: false },
+        { size: "L", returns: 3, sold: 22, ratePct: 14, high: false },
+        { size: "XL", returns: 2, sold: 15, ratePct: 13, high: false },
+      ],
+      gridDirection: "up",
+      diagnosis: "siatka leci za duża, krój mały.",
+      sample: {
+        returnsWithReason: 29,
+        totalReturns: 50,
+        windowDays: 90,
+        sourceLabel: "sprzedaży per rozmiar i 29 z 50 zwrotów z powodem „rozmiar”",
+      },
+    },
+  },
   verification: {
     testWindow:
-      "Po 2 tygodniach sprawdź return rate na tym SKU (na zamówieniach sprzed min. 30 dni).",
+      "Po 2 tygodniach sprawdź return rate na S i M osobno (na zamówieniach sprzed min. 30 dni).",
     keepRule: "RR w dół → zostaw zmianę i powtórz na kolejnym produkcie.",
-    revertRule: "RR bez zmian → wróć do poprzedniej wersji karty produktu.",
+    revertRule: "Bez zmian → problem nie w siatce. Sprawdź zdjęcia kroju.",
   },
 };
