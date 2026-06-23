@@ -24,10 +24,21 @@ export interface TopPricingSku {
   verdict: PricingRecommendation;
 }
 
-export function pickTopPricingSku(inputs: PricingSkuInput[]): TopPricingSku | null {
+export function pickTopPricingSku(
+  inputs: PricingSkuInput[],
+  salesByProductId?: Map<string, number>
+): TopPricingSku | null {
   const recommended = inputs
     .map((input, idx) => ({ input, idx, verdict: resolvePricingRecommendation(input) }))
-    .filter((r) => r.verdict.status === "recommended");
+    .filter((r) => r.verdict.status === "recommended")
+    // Guardrail popytu: podwyżka (zapomniana cena / popyt) bez ani jednej sprzedaży w 30 dni
+    // nie jest dowodem okazji — to martwy SKU, nie zapomniana cena. Nie promujemy go na
+    // nagłówkową „Akcję na ten tydzień". Brak danych sprzedaży → guardrail nieaktywny.
+    .filter((r) => {
+      if (!salesByProductId) return true;
+      const sales30d = salesByProductId.get(r.input.productId) ?? 0;
+      return !(r.verdict.direction === "raise" && sales30d === 0);
+    });
 
   if (recommended.length === 0) return null;
 
@@ -59,6 +70,7 @@ interface CardCopyArgs {
   months: number; // dni_od_zmiany / 30 — wiek ceny (diagnostyczny)
   ruchPct: number; // ruch mediany w % (diagnostyczny)
   deviationPct: number; // |odchylenie| od mediany w % (diagnostyczny)
+  sales30d: number; // sztuk sprzedanych w ostatnich 30 dniach (sygnał popytu)
 }
 
 // Trzeci kafel „Co mówią liczby" — sygnał per przyczyna (zastępuje dawną „cenę
@@ -74,6 +86,7 @@ interface CardCopy {
   insightShort: string; // treść: 1 zdanie diagnozy + 1 zdanie miękkiej sugestii
   ctaLabel: string;
   contextExplanation: string;
+  resultSub?: string; // podpis pod kaflem „Twoja cena" (np. wiek ceny przy zapomnianej cenie)
   thirdTile: ThirdTile;
   action: string; // miękka sugestia kierunku, bez liczby docelowej
   actionInsight: string;
@@ -86,16 +99,19 @@ const cardCopyByReason: Record<
   "forgotten_price" | "demand" | "too_expensive",
   (a: CardCopyArgs) => CardCopy
 > = {
-  forgotten_price: ({ productName, mediana, months, ruchPct }) => ({
+  forgotten_price: ({ productName, mediana, months, ruchPct, sales30d }) => ({
     title: `Twoja cena stoi w miejscu od ${months} miesięcy, a konkurencja podniosła ceny o ${ruchPct}%`,
     insightShort: "Jesteś teraz najtańszy w kategorii. Rozważ podwyżkę, żeby nadgonić rynek.",
     ctaLabel: "Zobacz porównanie z rynkiem",
     contextExplanation:
       "Cena tego produktu stoi od dłuższego czasu, a mediana podkategorii w tym czasie wzrosła. To wygląda na zapomnianą cenę, nie świadomy wybór — rynek odjechał do góry, a Ty zostałaś z dawną stawką. Bycie najtańszą pozycją na rynku rzadko jest optymalne.",
+    // Wiek ceny zeszedł do podpisu pod „Twoja cena"; trzeci kafel pokazuje teraz popyt —
+    // dowód, że niska cena to realna okazja (produkt się sprzedaje), a nie martwy SKU.
+    resultSub: `ostatnia zmiana: ${months} mies. temu`,
     thirdTile: {
-      label: "Cena bez zmian",
-      value: `${months} mies.`,
-      sub: `rynek +${ruchPct}% w tym czasie`,
+      label: "Popyt",
+      value: `${sales30d} szt.`,
+      sub: "sprzedanych w ostatnich 30 dniach",
     },
     action: `Rozważ podwyżkę, żeby nadgonić rynek — przez ${months} mies. Twoja cena stała w miejscu, a mediana podkategorii wzrosła.`,
     actionInsight: `Masz zapas do mediany podkategorii (${mediana} zł), więc ryzyko spadku zamówień jest niewielkie.`,
@@ -147,7 +163,8 @@ const cardCopyByReason: Record<
 export function buildCennikRecommendation(
   input: PricingSkuInput,
   product: Product,
-  verdict: PricingRecommendation
+  verdict: PricingRecommendation,
+  sales30d: number
 ): SellerRecommendation {
   const reason = verdict.reasonCode as "forgotten_price" | "demand" | "too_expensive";
   const raise = verdict.direction === "raise";
@@ -156,6 +173,8 @@ export function buildCennikRecommendation(
   const months = Math.round(input.dniOdZmiany / 30);
   // taniej niż rynek → różnica ujemna; drożej → dodatnia (liczba diagnostyczna)
   const differenceStr = raise ? `−${deviationPct}%` : `+${deviationPct}%`;
+  // Sygnał popytu na chipie kafla i w wierszu SKU (sztuk / 30 dni).
+  const demandSignal = `${sales30d} sprzedanych / 30 dni`;
 
   const copy = cardCopyByReason[reason]({
     productName: product.name,
@@ -163,6 +182,7 @@ export function buildCennikRecommendation(
     months,
     ruchPct: input.ruchMedianyPct,
     deviationPct,
+    sales30d,
   });
 
   const categoryLabel = categoryLabelPl[product.productCategory];
@@ -180,15 +200,17 @@ export function buildCennikRecommendation(
       imageSrc,
       category: categoryLabel,
       productSlug: product.slug,
+      demandSignal,
     },
     yourResultTile: {
       label: `Twoja cena (${product.name})`,
       value: `${input.cena} zł`,
+      sub: copy.resultSub,
     },
     benchmarkTile: {
       label: "Benchmark",
       value: `${input.mediana} zł`,
-      sub: `Mediana podkategorii · ${input.n} ofert porównawczych`,
+      sub: `Mediana z ostatnich 90 dni · ${input.n} ofert porównawczych`,
     },
     // Trzeci kafel „Co mówią liczby" — sygnał per przyczyna (zamiast ceny docelowej).
     financialEffectTile: {
@@ -207,6 +229,8 @@ export function buildCennikRecommendation(
         yourValue: `${input.cena} zł`,
         benchmarkValue: `${input.mediana} zł`,
         difference: differenceStr,
+        demandSignal,
+        lowDemand: sales30d === 0,
       },
     ],
     actionStep: {

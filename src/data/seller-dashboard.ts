@@ -72,13 +72,21 @@ export const pricingSkuInputs: PricingSkuInput[] = [
 // top pick wg priorytetu przyczyny, a kartę składa warstwa prezentacji z werdyktu
 // + danych SKU (zamiast ręcznej narracji). Reszta rekomendowanych SKU idzie do
 // sekcji „Rekomendacje cenowe" (pricingWidgetInputs, bez duplikatu top picku).
-const topPricingSku = pickTopPricingSku(pricingSkuInputs);
+// Sygnał popytu (sztuk / 30 dni) bierzemy z sellerProductRows — jedno źródło prawdy,
+// łączone po productId. Zasila guardrail top picku i kafel popytu na karcie.
+const salesByProductId = new Map(sellerProductRows.map((r) => [r.productId, r.sales30d]));
+const topPricingSku = pickTopPricingSku(pricingSkuInputs, salesByProductId);
 const topPricingProduct = topPricingSku
   ? products.find((p) => p.id === topPricingSku.input.productId)
   : undefined;
 const cennikRecommendation =
   topPricingSku && topPricingProduct
-    ? buildCennikRecommendation(topPricingSku.input, topPricingProduct, topPricingSku.verdict)
+    ? buildCennikRecommendation(
+        topPricingSku.input,
+        topPricingProduct,
+        topPricingSku.verdict,
+        salesByProductId.get(topPricingSku.input.productId) ?? 0
+      )
     : null;
 
 // Wejście dla sekcji „Rekomendacje cenowe" — pozostałe SKU (top pick jest już
