@@ -60,7 +60,7 @@ function actionForReason(top: ReturnReason): ReasonDrivenAction {
         kind: "qc_batch",
         title: "Zgłoś partię do kontroli jakości",
         insight:
-          "Produkt wraca głównie z powodu jakości wykonania. To nie kwestia karty produktu — zgłoś partię do QC lub rozważ wycofanie SKU.",
+          "Produkt wraca głównie z powodu jakości wykonania. To nie kwestia karty produktu — zgłoś partię do QC.",
         ctaLabel: "Zgłoś partię do QC",
         wozEvent: "woz_qc_report_click",
       };

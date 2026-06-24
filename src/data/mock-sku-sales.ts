@@ -1,4 +1,4 @@
-import type { ReturnsSkuInput } from "@/types/seller-dashboard";
+import type { ReturnsSkuInput, ReturnReasonsData } from "@/types/seller-dashboard";
 
 // ───────────────────────────────────────────────────────────────────────────
 // MOCK SPRZEDAŻY/ZWROTÓW SKU — źródło danych do prototypu Bartka (FashionHero)
@@ -37,3 +37,57 @@ export const bartekReturnsSkus: ReturnsSkuInput[] = [
   // MF-355 Mokasyny Soft → REKO Wygląd (RR 49% vs 20%, +29pp; powód=wygląd; n≥20 ok).
   { productId: "355", skuName: "Mokasyny Soft", sprzedaz30d: 22, rr: 0.49, rrMediana: 0.20, n: 77, nPodkat: 11, kosztZwrotow: 2907, powod: "wyglad", udzialPowodu: 0.47 },
 ];
+
+// Obrazki per SKU Bartka (poza products.ts).
+export const bartekImageSrcByProductId: Record<string, string> = {
+  "307": "/images/products/product-8.jpg",
+  "312": "/images/products/product-9.jpg",
+  "355": "/images/products/product-10.jpg",
+};
+
+// Powody zwrotu per SKU — źródło drill-downu na stronie returns-action.
+// Tylko REKO (307, 355); KEEP (312) nie potrzebuje tych danych.
+export const bartekReasonsByProductId: Record<string, ReturnReasonsData> = {
+  // MF-307 Botki Chelsea — rozmiar dominuje (58%), siatka za duża → "za_male"
+  "307": {
+    reasons: [
+      { code: "rozmiar", label: "Niedopasowanie rozmiaru", sharePct: 58, returnsCount: 51 },
+      { code: "inne", label: "Inne", sharePct: 20, returnsCount: 18 },
+    ],
+    sample: {
+      returnsWithReason: 69,
+      totalReturns: 88,
+      windowDays: 90,
+      sourceLabel: "komentarzy kupujących na FashionHero (klasyfikacja automatyczna)",
+    },
+    sizeBreakdown: {
+      rows: [
+        { size: "36", returns: 22, sold: 28, ratePct: 79, high: false },
+        { size: "37", returns: 18, sold: 24, ratePct: 75, high: false },
+        { size: "38", returns: 8, sold: 22, ratePct: 36, high: false },
+        { size: "39", returns: 3, sold: 14, ratePct: 21, high: false },
+      ],
+      gridDirection: "up",
+      diagnosis: "Siatka leci za duża — kupujące biorą swój rozmiar i dostają za mały.",
+      sample: {
+        returnsWithReason: 51,
+        totalReturns: 88,
+        windowDays: 90,
+        sourceLabel: "sprzedaży per rozmiar i 51 zwrotów z powodem 'rozmiar'",
+      },
+    },
+  },
+  // MF-355 Mokasyny Soft — wygląd dominuje (47%), niezgodnosc_z_opisem → "2c"
+  "355": {
+    reasons: [
+      { code: "niezgodnosc_z_opisem", label: "Wygląd niezgodny z opisem", sharePct: 47, returnsCount: 36 },
+      { code: "kolor", label: "Kolor inny niż na zdjęciu", sharePct: 22, returnsCount: 17 },
+    ],
+    sample: {
+      returnsWithReason: 53,
+      totalReturns: 77,
+      windowDays: 90,
+      sourceLabel: "komentarzy kupujących na FashionHero (klasyfikacja automatyczna)",
+    },
+  },
+};
