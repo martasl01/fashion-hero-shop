@@ -3497,6 +3497,7 @@ export const products: Product[] = [
       "/images/products/product-1.jpg",
       "/images/products/product-9.jpg",
     ],
+    subcategory: "Klapki",
   },
   {
     id: "202",

@@ -189,6 +189,7 @@ export interface ReturnsSkuInput {
   kosztZwrotow: number; // szacowany koszt zwrotów SKU (zł)
   powod: "rozmiar" | "wyglad" | "jakosc" | null; // dominujący powód zwrotu
   udzialPowodu: number; // udział głównego powodu (0–1); ≥ 0,40 by uznać
+  subcategory?: string;
 }
 
 // Status werdyktu. Mapowanie 1:1 do silnika Doroty (recommended/silent/excluded),

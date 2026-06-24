@@ -221,7 +221,7 @@ export function buildReturnsRecommendation(
       name: input.skuName,
       sku: input.productId,
       imageSrc: opts?.imageSrc ?? "/images/products/product-1.jpg",
-      category: "",
+      category: input.subcategory ? `Buty / ${input.subcategory}` : "",
       productSlug: "",
     },
     yourResultTile: {
@@ -245,7 +245,7 @@ export function buildReturnsRecommendation(
         name: input.skuName,
         sku: input.productId,
         productSlug: "",
-        category: "",
+        category: input.subcategory ? `Buty / ${input.subcategory}` : "",
         price: "",
         yourValue: pct(input.rr),
         benchmarkValue: pct(input.rrMediana),
