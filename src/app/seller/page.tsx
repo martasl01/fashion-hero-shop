@@ -6,11 +6,15 @@ import {
   sellerProductRows,
   sellerRecommendations,
   pricingWidgetInputs,
+  bartekProductRow,
+  dorotaProductRows,
 } from "@/data/seller-dashboard";
 import { MetricTiles } from "@/components/seller/metric-tiles";
 import { ProductsTable } from "@/components/seller/products-table";
 import { RecommendationsWidget } from "@/components/seller/recommendations-widget";
 import { PricingRecommendationsWidget } from "@/components/seller/pricing-recommendations-widget";
+import { ReturnsProductsTable } from "@/components/seller/returns-products-table";
+import { PricingProductsTable } from "@/components/seller/pricing-products-table";
 import { BartekActionWidget } from "@/components/seller/bartek-action-widget";
 import { PrototypeSwitch } from "@/components/seller/prototype-switch";
 
@@ -30,6 +34,8 @@ export default function SellerDashboardPage() {
 
             <PricingRecommendationsWidget products={sellerProducts} inputs={pricingWidgetInputs} />
 
+            <PricingProductsTable rows={dorotaProductRows} />
+
             <MetricTiles metrics={sellerMetrics} timeRangeOptions={timeRangeOptions} />
 
             <ProductsTable products={sellerProducts} rows={sellerProductRows} />
@@ -38,6 +44,13 @@ export default function SellerDashboardPage() {
         bartekView={
           <>
             <BartekActionWidget />
+
+            {bartekProductRow && (
+              <ReturnsProductsTable
+                rows={[bartekProductRow]}
+                subcategory="Skate"
+              />
+            )}
 
             <MetricTiles metrics={sellerMetrics} timeRangeOptions={timeRangeOptions} />
 

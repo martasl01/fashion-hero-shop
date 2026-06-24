@@ -161,6 +161,20 @@ export interface ReturnsProductRow {
   yourValue: string;
   benchmarkValue: string;
   difference: string;
+  returnsCount: number;
+  cena: number;
+  popyt: number;
+}
+
+export interface PricingProductRow {
+  name: string;
+  imageSrc: string;
+  sku: string;
+  cena: number;
+  dniOdZmiany: number;
+  mediana: number;
+  roznicaPct: number;
+  popyt: number;
 }
 
 export interface ReturnsActionOption {

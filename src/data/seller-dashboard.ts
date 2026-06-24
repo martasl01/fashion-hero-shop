@@ -5,6 +5,8 @@ import type {
   SellerRecommendation,
   ReturnsActionCard,
   PricingSkuInput,
+  ReturnsProductRow,
+  PricingProductRow,
 } from "@/types/seller-dashboard";
 import { products } from "@/data/products";
 import {
@@ -202,6 +204,43 @@ export const returnsRecommendation: SellerRecommendation | null = _topReturnsSku
     })
   : null;
 
+// Cennik SKU Bartka — cena nie jest wejściem silnika zwrotów, trzymamy osobno.
+const bartekSkuCena: Record<string, number> = {
+  "307": 249,
+  "312": 199,
+  "355": 189,
+};
+
+// Jeden wiersz tabeli SKU = SKU z aktywnej rekomendacji (prototyp: 1 reko/tydzień).
+export const bartekProductRow: ReturnsProductRow | null = _topReturnsSku
+  ? {
+      name: _topReturnsSku.input.skuName,
+      sku: _topReturnsSku.input.productId,
+      imageSrc: bartekImageSrcByProductId[_topReturnsSku.input.productId],
+      yourValue: `${Math.round(_topReturnsSku.input.rr * 100)}%`,
+      returnsCount: Math.round(_topReturnsSku.input.rr * _topReturnsSku.input.n),
+      benchmarkValue: `${Math.round(_topReturnsSku.input.rrMediana * 100)}%`,
+      difference: `+${Math.round((_topReturnsSku.input.rr - _topReturnsSku.input.rrMediana) * 100)} pp`,
+      cena: bartekSkuCena[_topReturnsSku.input.productId] ?? 0,
+      popyt: _topReturnsSku.input.sprzedaz30d,
+    }
+  : null;
+
+// Wiersze tabeli SKU Doroty — wszystkie SKU z cennika, wzbogacone o dane produktu i popyt.
+export const dorotaProductRows: PricingProductRow[] = pricingSkuInputs.map((input) => {
+  const product = products.find((p) => p.id === input.productId);
+  return {
+    name: product?.name ?? input.productId,
+    imageSrc: product?.images[0] ?? "",
+    sku: input.productId,
+    cena: input.cena,
+    dniOdZmiany: input.dniOdZmiany,
+    mediana: input.mediana,
+    roznicaPct: Math.round(((input.cena / input.mediana) - 1) * 100),
+    popyt: salesByProductId.get(input.productId) ?? 0,
+  };
+});
+
 // Karta akcji bartek-type — wariant zwrotów. Dane zamockowane na sztywno
 // (prototyp WoZ, bez silnika i źródła danych).
 export const returnsAction: ReturnsActionCard = {
@@ -238,6 +277,9 @@ export const returnsAction: ReturnsActionCard = {
       yourValue: "34%",
       benchmarkValue: "18%",
       difference: "+16 pp",
+      returnsCount: 0,
+      cena: 0,
+      popyt: 0,
     },
   ],
   options: [

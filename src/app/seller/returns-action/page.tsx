@@ -40,6 +40,9 @@ export default function ReturnsActionPage() {
     yourValue: rec.yourResultTile.value,
     benchmarkValue: rec.benchmarkTile.value,
     difference: rec.affectedProductRows[0]?.difference ?? "",
+    returnsCount: 0,
+    cena: 0,
+    popyt: 0,
   };
 
   return (
