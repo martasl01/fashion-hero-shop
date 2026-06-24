@@ -31,7 +31,7 @@ import type { ReturnsSkuInput, ReturnReasonsData } from "@/types/seller-dashboar
 // udzialPowodu ≥ 0,40. RR w normie → KEEP (karta się nie renderuje).
 export const bartekReturnsSkus: ReturnsSkuInput[] = [
   // MF-307 Botki Chelsea → REKO Rozmiar (RR 61% vs mediana 27%, +34pp; rozmiar dominuje).
-  { productId: "307", skuName: "Botki Chelsea", sprzedaz30d: 54, rr: 0.61, rrMediana: 0.27, n: 88, nPodkat: 18, kosztZwrotow: 5338, powod: "rozmiar", udzialPowodu: 0.58 },
+  { productId: "307", skuName: "Buty Skate", sprzedaz30d: 54, rr: 0.61, rrMediana: 0.27, n: 88, nPodkat: 18, kosztZwrotow: 5338, powod: "rozmiar", udzialPowodu: 0.58 },
   // MF-312 Sneakersy Court → KEEP (RR 22% w normie podkategorii, odchylenie < 8pp).
   { productId: "312", skuName: "Sneakersy Court", sprzedaz30d: 41, rr: 0.22, rrMediana: 0.24, n: 63, nPodkat: 14, kosztZwrotow: 710, powod: "jakosc", udzialPowodu: 0.30 },
   // MF-355 Mokasyny Soft → REKO Wygląd (RR 49% vs 20%, +29pp; powód=wygląd; n≥20 ok).
@@ -51,8 +51,7 @@ export const bartekReasonsByProductId: Record<string, ReturnReasonsData> = {
   // MF-307 Botki Chelsea — rozmiar dominuje (58%), siatka za duża → "za_male"
   "307": {
     reasons: [
-      { code: "rozmiar", label: "Niedopasowanie rozmiaru", sharePct: 58, returnsCount: 51 },
-      { code: "inne", label: "Inne", sharePct: 20, returnsCount: 18 },
+      { code: "rozmiar", label: "Niedopasowanie rozmiaru", sharePct: 74, returnsCount: 51 },
     ],
     sample: {
       returnsWithReason: 69,
@@ -62,10 +61,10 @@ export const bartekReasonsByProductId: Record<string, ReturnReasonsData> = {
     },
     sizeBreakdown: {
       rows: [
-        { size: "36", returns: 22, sold: 28, ratePct: 79, high: false },
-        { size: "37", returns: 18, sold: 24, ratePct: 75, high: false },
-        { size: "38", returns: 8, sold: 22, ratePct: 36, high: false },
-        { size: "39", returns: 3, sold: 14, ratePct: 21, high: false },
+        { size: "36", returns: 3, sold: 24, ratePct: 13, high: false },
+        { size: "37", returns: 16, sold: 20, ratePct: 80, high: false },
+        { size: "38", returns: 20, sold: 26, ratePct: 77, high: false },
+        { size: "39", returns: 12, sold: 18, ratePct: 67, high: false },
       ],
       gridDirection: "up",
       diagnosis: "Siatka leci za duża — kupujące biorą swój rozmiar i dostają za mały.",

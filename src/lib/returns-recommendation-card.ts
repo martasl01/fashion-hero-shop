@@ -225,14 +225,14 @@ export function buildReturnsRecommendation(
       productSlug: "",
     },
     yourResultTile: {
-      label: "Twój RR na tym SKU",
+      label: "Twoje zwroty na tym SKU",
       value: pct(input.rr),
       sub: `${input.n} zamówień, okno ~90 dni`,
     },
     benchmarkTile: {
-      label: "Benchmark",
+      label: "Benchmark konkurencji",
       value: pct(input.rrMediana),
-      sub: `Mediana podkategorii · ${input.nPodkat} ofert porównawczych`,
+      sub: `Mediana zwrotów w podkategorii · porównano: ${input.nPodkat} ofert`,
     },
     financialEffectTile: {
       label: "Ile kosztują Cię te zwroty",
