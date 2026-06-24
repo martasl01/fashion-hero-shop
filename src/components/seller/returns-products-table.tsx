@@ -53,7 +53,7 @@ export function ReturnsProductsTable({
                 Zwroty % (liczba)
               </th>
               <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
-                Benchmark „{subcategory}"
+                Benchmark zwroty
               </th>
               <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
                 Różnica
