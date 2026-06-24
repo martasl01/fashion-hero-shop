@@ -1,12 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, Check, RotateCcw } from "lucide-react";
-import { returnsRecommendation } from "@/data/seller-dashboard";
-import { bartekReasonsByProductId } from "@/data/mock-sku-sales";
+import { returnsRecommendation, bartekProductRow } from "@/data/seller-dashboard";
+import { bartekReasonsByProductId, bartekReturnsSkus } from "@/data/mock-sku-sales";
 import { MetricTile } from "@/components/seller/metric-tile";
 import { ReturnReasonsBlock } from "@/components/seller/return-reasons-block";
 import { SizeBreakdownTable } from "@/components/seller/size-breakdown-table";
 import { ReasonDrivenAction } from "@/components/seller/reason-driven-action";
+import { ReturnsProductsTable } from "@/components/seller/returns-products-table";
 import { resolveReturnReasons } from "@/lib/return-reasons";
 
 export default function ReturnsActionPage() {
@@ -32,8 +33,10 @@ export default function ReturnsActionPage() {
   const product = rec.primaryProduct;
   const reasonsData = bartekReasonsByProductId[product.sku];
   const resolution = reasonsData ? resolveReturnReasons(reasonsData) : null;
-  // ReasonDrivenAction wymaga ReturnsProductRow — składamy z danych karty.
-  const productRow = {
+  const skuData = bartekReturnsSkus.find((s) => s.productId === product.sku);
+  const subcategory = skuData?.subcategory ?? product.category;
+  // ReasonDrivenAction wymaga ReturnsProductRow — używamy bartekProductRow gdy dostępny.
+  const productRow = bartekProductRow ?? {
     name: product.name,
     sku: product.sku,
     imageSrc: product.imageSrc,
@@ -121,6 +124,8 @@ export default function ReturnsActionPage() {
           </p>
         </section>
       )}
+
+      <ReturnsProductsTable rows={[productRow]} subcategory={subcategory} />
 
       {/* Jak sprawdzić zmianę */}
       <section className="flex flex-col gap-4">
