@@ -112,6 +112,44 @@ export interface SellerProductRow {
   sales30d: number;
 }
 
+// --- Silnik rekomendacji cenowej (wariant A) — dorota-type ---
+// Deterministyczny klasyfikator regułowy: jedna rekomendacja na SKU. Typuje
+// PRZYCZYNĘ i KIERUNEK, nie liczy o ile zmienić cenę (granica MVP). Logika i
+// progi w lib/pricing-recommendation.ts (czysta logika WoZ, nie baza danych).
+
+// Wejście na SKU — 8 pól ze speca. Brak kompletu → SKU nie trafia do datasetu
+// (nie zgadujemy). Wartości natywne ze speca: pozycja 0–1, ruch mediany w %.
+export interface PricingSkuInput {
+  productId: string; // łączy z products.ts po id (jak SellerProductRow)
+  cena: number; // aktualna cena SKU
+  mediana: number; // mediana podkategorii
+  n: number; // liczba porównywalnych ofert
+  pozycja: number; // pozycja w rozkładzie 0–1 (0 = najtańsze, 1 = najdroższe)
+  dniOdZmiany: number; // ile dni temu zmieniono cenę
+  ruchMedianyPct: number; // ruch mediany od tej zmiany w % (9 → +9%)
+  popytWysoki: boolean; // sprzedaje się szybko / niski stan
+  zalega: boolean; // brak sprzedaży / wysoki stan
+}
+
+export type PricingDirection = "raise" | "lower" | "hold";
+
+// forgotten_price/demand/too_expensive → rekomendacja; deliberate/no_evidence →
+// cisza (nic nie sugerujemy); out_of_test → poza testem (walidacja/warunek wejścia).
+export type PricingReasonCode =
+  | "forgotten_price"
+  | "demand"
+  | "too_expensive"
+  | "deliberate"
+  | "no_evidence"
+  | "out_of_test";
+
+export interface PricingRecommendation {
+  status: "recommended" | "silent" | "excluded";
+  reasonCode: PricingReasonCode;
+  direction: PricingDirection;
+  text: string | null; // treść karty; null gdy silent/excluded (slot się nie renderuje)
+}
+
 // --- Karta akcji „Akcja na ten tydzień" — wariant zwrotów (bartek-type) ---
 // Osobny, samodzielny model: template zwrotów różni się od SellerRecommendation
 // (kafel KOSZT zamiast różnicy, opcje wzbogacenia karty, „edytuj" jako atrapa WoZ).

@@ -4,7 +4,13 @@ import type {
   SellerProductRow,
   SellerRecommendation,
   ReturnsActionCard,
+  PricingSkuInput,
 } from "@/types/seller-dashboard";
+import { products } from "@/data/products";
+import {
+  pickTopPricingSku,
+  buildCennikRecommendation,
+} from "@/lib/pricing-recommendation-card";
 
 export const DASHBOARD_SELLER_ID = "s13";
 
@@ -35,66 +41,62 @@ export const sellerProductRows: SellerProductRow[] = [
   { productId: "210", stock: 22, status: "active",        sales30d: 14 },
 ];
 
+// Wejście silnika rekomendacji cenowej (wariant A) — te same SKU co
+// sellerProductRows. Dane zamockowane (prototyp WoZ). Dobrane tak, by pokazać
+// pełny rozkład wyników silnika: 3 rekomendacje (⬆ zapomniana, ⬆ popyt, ⬇ za
+// drogo), reszta to cisza (świadomy wybór / brak dowodu) lub poza testem.
+export const pricingSkuInputs: PricingSkuInput[] = [
+  // 201 → Zapomniana cena ⬆ (spójne z ręczną rekomendacją #1: 189 vs 215, stoi długo, rynek +9%)
+  { productId: "201", cena: 189, mediana: 215, n: 14, pozycja: 0.10, dniOdZmiany: 420, ruchMedianyPct: 9, popytWysoki: false, zalega: false },
+  // 202 → Świadomy wybór (świeża cena: zmieniona 12 dni temu)
+  { productId: "202", cena: 230, mediana: 260, n: 11, pozycja: 0.50, dniOdZmiany: 12,  ruchMedianyPct: 2, popytWysoki: false, zalega: false },
+  // 203 → Brak dowodu (taniej i stara cena, ale rynek się nie ruszył: +2%)
+  { productId: "203", cena: 150, mediana: 175, n: 14, pozycja: 0.15, dniOdZmiany: 200, ruchMedianyPct: 2, popytWysoki: false, zalega: false },
+  // 204 → Poza testem (odchylenie 4,6% < 8%)
+  { productId: "204", cena: 205, mediana: 215, n: 14, pozycja: 0.40, dniOdZmiany: 400, ruchMedianyPct: 9, popytWysoki: false, zalega: false },
+  // 205 → Poza testem (n = 3 < 5)
+  { productId: "205", cena: 150, mediana: 215, n: 3,  pozycja: 0.10, dniOdZmiany: 400, ruchMedianyPct: 9, popytWysoki: false, zalega: false },
+  // 206 → Za drogo ⬇ (drożej + zalega)
+  { productId: "206", cena: 168, mediana: 140, n: 12, pozycja: 0.92, dniOdZmiany: 200, ruchMedianyPct: 1, popytWysoki: false, zalega: true  },
+  // 207 → Poza testem (walidacja: popyt i zaleganie naraz — stan niezdefiniowany)
+  { productId: "207", cena: 120, mediana: 150, n: 10, pozycja: 0.20, dniOdZmiany: 90,  ruchMedianyPct: 4, popytWysoki: true,  zalega: true  },
+  // 208 → Popyt / wyprzedaż ⬆ (taniej + popyt wysoki, nisko w rozkładzie)
+  { productId: "208", cena: 95,  mediana: 110, n: 9,  pozycja: 0.18, dniOdZmiany: 60,  ruchMedianyPct: 1, popytWysoki: true,  zalega: false },
+  // 209 → Świadomy wybór (środek rozkładu: pozycja 0,55)
+  { productId: "209", cena: 180, mediana: 210, n: 12, pozycja: 0.55, dniOdZmiany: 300, ruchMedianyPct: 6, popytWysoki: false, zalega: false },
+  // 210 → Brak dowodu (drożej, ale nie zalega — nic nie pasuje)
+  { productId: "210", cena: 240, mediana: 215, n: 14, pozycja: 0.85, dniOdZmiany: 300, ruchMedianyPct: 0, popytWysoki: false, zalega: false },
+];
+
+// Nagłówkowa rekomendacja cennikowa („Akcja na ten tydzień") WYNIKA z silnika:
+// top pick wg priorytetu przyczyny, a kartę składa warstwa prezentacji z werdyktu
+// + danych SKU (zamiast ręcznej narracji). Reszta rekomendowanych SKU idzie do
+// sekcji „Rekomendacje cenowe" (pricingWidgetInputs, bez duplikatu top picku).
+// Sygnał popytu (sztuk / 30 dni) bierzemy z sellerProductRows — jedno źródło prawdy,
+// łączone po productId. Zasila guardrail top picku i kafel popytu na karcie.
+const salesByProductId = new Map(sellerProductRows.map((r) => [r.productId, r.sales30d]));
+const topPricingSku = pickTopPricingSku(pricingSkuInputs, salesByProductId);
+const topPricingProduct = topPricingSku
+  ? products.find((p) => p.id === topPricingSku.input.productId)
+  : undefined;
+const cennikRecommendation =
+  topPricingSku && topPricingProduct
+    ? buildCennikRecommendation(
+        topPricingSku.input,
+        topPricingProduct,
+        topPricingSku.verdict,
+        salesByProductId.get(topPricingSku.input.productId) ?? 0
+      )
+    : null;
+
+// Wejście dla sekcji „Rekomendacje cenowe" — pozostałe SKU (top pick jest już
+// nagłówkową kartą). Widget i tak filtruje wewnętrznie do „recommended".
+export const pricingWidgetInputs: PricingSkuInput[] = pricingSkuInputs.filter(
+  (i) => i.productId !== topPricingSku?.input.productId
+);
+
 export const sellerRecommendations: SellerRecommendation[] = [
-  {
-    id: "1",
-    category: "cennik",
-    title: "Twoja cena jest poniżej mediany podkategorii",
-    insightShort: "Mediana podkategorii klapki i japonki: 215 zł. Twoja cena: 189 zł (−12%). Masz przestrzeń na podwyżkę.",
-    ctaLabel: "Podnieś ceny",
-    primaryProduct: {
-      name: "Urban Slip-On",
-      sku: "201",
-      imageSrc: "/images/products/product-2.jpg",
-      category: "Buty > Klapki i japonki",
-      productSlug: "urban-slip-on-fashionmf",
-      demandSignal: "18 sprzedanych / 30 dni",
-    },
-    yourResultTile: {
-      label: "Twoja cena (Urban Slip-On)",
-      value: "189 zł",
-      sub: "Mediana ceny liczona z ostatnich 90 dni (sellerzy z RR <12%).",
-    },
-    benchmarkTile: {
-      label: "Benchmark",
-      value: "215 zł",
-      sub: "Mediana podkategorii: klapki i japonki",
-      sample: { sellers: 14, products: 24, granularity: "podkategorii «klapki i japonki»" },
-    },
-    financialEffectTile: { label: "Rekomendowana cena testowa", value: "208 zł", sub: "+10% na 2 tygodnie" },
-    contextExplanation:
-      "Twój produkt w podkategorii klapki i japonki może wyglądać na tańszy w porównaniu z ofertą konkurencji. To może być świadomy wybór cenowy albo niezamierzona luka — cena nie była aktualizowana od dłuższego czasu.",
-    // Dowód, że to zapomniana cena, nie świadomy wybór: cena stoi 14 mies., a
-    // mediana podkategorii w tym czasie wzrosła o 9%; pozycja w najtańszych 15%.
-    priceGapData: {
-      stagnation: { monthsSinceChange: 14, categoryMedianMovePct: 9 },
-      distribution: {
-        percentile: 15,
-        sample: { sellers: 14, products: 24, granularity: "podkategorii «klapki i japonki»" },
-      },
-    },
-    affectedProductRows: [
-      {
-        name: "Urban Slip-On",
-        sku: "201",
-        productSlug: "urban-slip-on-fashionmf",
-        category: "Buty",
-        price: "189 zł",
-        yourValue: "189 zł",
-        benchmarkValue: "215 zł",
-        difference: "−12%",
-        demandSignal: "18 sprzedanych / 30 dni",
-      },
-    ],
-    actionStep: {
-      action: "Podnieś cenę o 10% (z 189 zł do ~208 zł) na 2 tygodnie i sprawdź, czy utarg wzrośnie.",
-      actionInsight: "Nawet po podwyżce zostajesz poniżej mediany podkategorii (215 zł), więc ryzyko spadku zamówień jest niewielkie.",
-      testWindow: "2 tygodnie",
-      successMetric: "Utarg z Urban Slip-On (cena × liczba zamówień), nie sama liczba zamówień",
-      keepRule: "utarg w górę → zostaw cenę i możesz powtórzyć na kolejnym produkcie",
-      revertRule: "utarg w dół → wróć do 189 zł",
-    },
-  },
+  ...(cennikRecommendation ? [cennikRecommendation] : []),
   {
     id: "2",
     category: "rentowność",
