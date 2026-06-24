@@ -11,6 +11,8 @@ import {
   pickTopPricingSku,
   buildCennikRecommendation,
 } from "@/lib/pricing-recommendation-card";
+import { bartekReturnsSkus, bartekReasonsByProductId, bartekImageSrcByProductId } from "@/data/mock-sku-sales";
+import { pickTopReturnsSku, buildReturnsRecommendation } from "@/lib/returns-recommendation-card";
 
 export const DASHBOARD_SELLER_ID = "s13";
 
@@ -189,6 +191,16 @@ export const sellerRecommendations: SellerRecommendation[] = [
     },
   },
 ];
+
+// Rekomendacja zwrotowa Bartka — generowana przez silnik z bartekReturnsSkus.
+// null = wszystkie SKU są KEEP (silnik nie ma co rekomendować).
+const _topReturnsSku = pickTopReturnsSku(bartekReturnsSkus);
+export const returnsRecommendation: SellerRecommendation | null = _topReturnsSku
+  ? buildReturnsRecommendation(_topReturnsSku.input, _topReturnsSku.verdict, {
+      reasonsData: bartekReasonsByProductId[_topReturnsSku.input.productId],
+      imageSrc: bartekImageSrcByProductId[_topReturnsSku.input.productId],
+    })
+  : null;
 
 // Karta akcji bartek-type — wariant zwrotów. Dane zamockowane na sztywno
 // (prototyp WoZ, bez silnika i źródła danych).

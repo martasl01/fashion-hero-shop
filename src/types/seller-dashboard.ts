@@ -15,7 +15,7 @@ export interface SellerMetric {
 
 export type ProductStockStatus = "active" | "low-stock" | "out-of-stock" | "draft";
 
-export type RecommendationCategory = "rentowność" | "cennik" | "listing";
+export type RecommendationCategory = "rentowność" | "cennik" | "listing" | "zwroty";
 
 // Liczność próby, na której policzono benchmark ZEWNĘTRZNY (mediana z innych
 // sprzedawców). Uwiarygodnia benchmark liczbą sprzedawców w próbce.
@@ -166,6 +166,54 @@ export interface ReturnsProductRow {
 export interface ReturnsActionOption {
   title: string;
   insight: string;
+}
+
+// --- Silnik rekomendacji zwrotowej (RR) — wejście i wyjście (bartek-type) ---
+// Symetryczny do silnika cenowego Doroty, ale dźwignią jest return rate (RR),
+// nie cena. Wejście to surowe metryki SKU, wyjście to werdykt: czy rekomendować
+// i jaka akcja naprawcza. Logika w lib/returns-recommendation.ts (PoC v2 — bez
+// akcji „Wycofaj", patrz silnik-bartek-specyfikacja.md, nota v1→v2).
+
+// Wejście silnika zwrotów — arkusz „Bartek_zwroty" z mocka SKU.
+// Pola 1:1 ze specem (mock-sprzedaz-sku-…xlsx). Bartek nie mapuje się na
+// products.ts (jego id spoza katalogu), więc nazwę SKU trzymamy w danych — typ
+// jest samowystarczalny.
+export interface ReturnsSkuInput {
+  productId: string; // id SKU (poza products.ts — Bartek)
+  skuName: string; // nazwa SKU (dane samodzielne, brak wpisu w products.ts)
+  sprzedaz30d: number; // sztuk sprzedanych / 30 dni
+  rr: number; // return rate SKU (0–1)
+  rrMediana: number; // mediana RR w podkategorii (0–1)
+  n: number; // liczba zamówień SKU (wiarygodność RR)
+  nPodkat: number; // liczba ofert w benchmarku (wiarygodność mediany)
+  kosztZwrotow: number; // szacowany koszt zwrotów SKU (zł)
+  powod: "rozmiar" | "wyglad" | "jakosc" | null; // dominujący powód zwrotu
+  udzialPowodu: number; // udział głównego powodu (0–1); ≥ 0,40 by uznać
+}
+
+// Status werdyktu. Mapowanie 1:1 do silnika Doroty (recommended/silent/excluded),
+// nazwy dostrojone do RR: recommended = REKO, silent = KEEP (RR w normie),
+// out_of_test = POZA_TESTEM (za mała próba / dane poza zakresem / brak danych).
+export type ReturnsStatus = "recommended" | "silent" | "out_of_test";
+
+// Kod przyczyny. „obserwuj" = wysoki RR bez naprawialnej przyczyny (diagnoza bez
+// akcji); „rr_w_normie" = bezpiecznik KEEP; „out_of_test" = poza testem.
+export type ReturnsReasonCode =
+  | "zly_rozmiar"
+  | "mylacy_wyglad"
+  | "obserwuj"
+  | "rr_w_normie"
+  | "out_of_test";
+
+// Akcja naprawcza. „observe" = tylko diagnoza, „none" = brak (KEEP / poza testem).
+export type ReturnsAction = "size_table" | "photos" | "observe" | "none";
+
+export interface ReturnsRecommendation {
+  status: ReturnsStatus;
+  reasonCode: ReturnsReasonCode;
+  action: ReturnsAction;
+  text: string | null; // null gdy silent / out_of_test (karta się nie renderuje)
+  note?: string; // diagnostyka POZA_TESTEM / KEEP do strony testowej silnika
 }
 
 // --- Powód zwrotu („Dlaczego ten produkt wraca") ---

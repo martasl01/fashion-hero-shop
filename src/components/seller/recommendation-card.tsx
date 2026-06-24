@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Tag, TrendingDown, Package, CheckCircle } from "lucide-react";
+import { Tag, TrendingDown, Package, CheckCircle, RotateCcw } from "lucide-react";
 import type { SellerRecommendation } from "@/types/seller-dashboard";
 import { useCompletedActions } from "@/hooks/use-completed-actions";
 import { DemandSignal } from "./demand-signal";
@@ -10,6 +10,7 @@ const categoryIcons: Record<SellerRecommendation["category"], React.ReactNode> =
   cennik: <Tag size={13} />,
   rentowność: <TrendingDown size={13} />,
   listing: <Package size={13} />,
+  zwroty: <RotateCcw size={13} />,
 };
 
 interface RecommendationCardProps {
