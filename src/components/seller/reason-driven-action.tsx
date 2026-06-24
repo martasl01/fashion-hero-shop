@@ -10,13 +10,14 @@ import type {
 interface ReasonDrivenActionProps {
   action: ReasonAction;
   product: ReturnsProductRow;
+  hideProductCard?: boolean;
 }
 
 // Akcja „Co możesz zrobić" sterowana top powodem zwrotu. Atrapa „edytuj" na karcie SKU
 // rejestruje intencję (event PostHog), nie prowadzi do realnej edycji ani potwierdzenia.
 // kind="no_fix" → bez karty SKU (nie ma czego naprawiać).
 // kind="diagnostic" → wariant „nie wiemy jeszcze" (dashed empty-state, nie zgadujemy).
-export function ReasonDrivenAction({ action, product }: ReasonDrivenActionProps) {
+export function ReasonDrivenAction({ action, product, hideProductCard = false }: ReasonDrivenActionProps) {
   const posthog = usePostHog();
 
   const handleEdit = (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -65,8 +66,8 @@ export function ReasonDrivenAction({ action, product }: ReasonDrivenActionProps)
         )}
       </div>
 
-      {/* Karta SKU z atrapą „edytuj" — pomijana dla no_fix (nie ma czego naprawiać) */}
-      {action.kind !== "no_fix" && (
+      {/* Karta SKU z atrapą „edytuj" — pomijana dla no_fix i gdy zastępuje ją tabela */}
+      {!hideProductCard && action.kind !== "no_fix" && (
         <div className="border border-black/10 rounded-xl overflow-hidden bg-cream-light">
           <div className="p-5 flex items-center gap-3.5">
             <Image

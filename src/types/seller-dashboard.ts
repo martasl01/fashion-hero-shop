@@ -154,16 +154,20 @@ export interface PricingRecommendation {
 // Osobny, samodzielny model: template zwrotów różni się od SellerRecommendation
 // (kafel KOSZT zamiast różnicy, opcje wzbogacenia karty, „edytuj" jako atrapa WoZ).
 
+export type PopytTrend = "up" | "down" | "stable";
+
 export interface ReturnsProductRow {
   name: string;
   sku: string;
   imageSrc: string;
   yourValue: string;
   benchmarkValue: string;
+  benchmarkSub?: string;
   difference: string;
   returnsCount: number;
   cena: number;
   popyt: number;
+  popytTrend: PopytTrend;
 }
 
 export interface PricingProductRow {
@@ -173,8 +177,10 @@ export interface PricingProductRow {
   cena: number;
   dniOdZmiany: number;
   mediana: number;
+  benchmarkSub?: string;
   roznicaPct: number;
   popyt: number;
+  popytTrend: PopytTrend;
 }
 
 export interface ReturnsActionOption {

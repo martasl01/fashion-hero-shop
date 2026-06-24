@@ -38,6 +38,13 @@ export const bartekReturnsSkus: ReturnsSkuInput[] = [
   { productId: "355", skuName: "Mokasyny Soft", sprzedaz30d: 22, rr: 0.49, rrMediana: 0.20, n: 77, nPodkat: 11, kosztZwrotow: 2907, powod: "wyglad", udzialPowodu: 0.47, subcategory: "Mokasyny" },
 ];
 
+// Trend popytu per SKU Bartka — mockowany (prototyp: brak danych historycznych).
+export const bartekPopytTrendByProductId: Record<string, "up" | "down" | "stable"> = {
+  "307": "up",     // Buty Skate — sprzedaż rośnie mimo wysokiego RR
+  "312": "stable", // Sneakersy Court — stabilny popyt
+  "355": "down",   // Mokasyny Soft — popyt spada (efekt złego wizerunku)
+};
+
 // Obrazki per SKU Bartka (poza products.ts).
 export const bartekImageSrcByProductId: Record<string, string> = {
   "307": "/images/products/product-8.jpg",

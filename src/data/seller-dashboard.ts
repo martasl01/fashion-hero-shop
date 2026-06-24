@@ -13,7 +13,7 @@ import {
   pickTopPricingSku,
   buildCennikRecommendation,
 } from "@/lib/pricing-recommendation-card";
-import { bartekReturnsSkus, bartekReasonsByProductId, bartekImageSrcByProductId } from "@/data/mock-sku-sales";
+import { bartekReturnsSkus, bartekReasonsByProductId, bartekImageSrcByProductId, bartekPopytTrendByProductId } from "@/data/mock-sku-sales";
 import { pickTopReturnsSku, buildReturnsRecommendation } from "@/lib/returns-recommendation-card";
 
 export const DASHBOARD_SELLER_ID = "s13";
@@ -220,15 +220,18 @@ export const bartekProductRow: ReturnsProductRow | null = _topReturnsSku
       yourValue: `${Math.round(_topReturnsSku.input.rr * 100)}%`,
       returnsCount: Math.round(_topReturnsSku.input.rr * _topReturnsSku.input.n),
       benchmarkValue: `${Math.round(_topReturnsSku.input.rrMediana * 100)}%`,
+      benchmarkSub: `${_topReturnsSku.input.nPodkat} ofert`,
       difference: `+${Math.round((_topReturnsSku.input.rr - _topReturnsSku.input.rrMediana) * 100)} pp`,
       cena: bartekSkuCena[_topReturnsSku.input.productId] ?? 0,
       popyt: _topReturnsSku.input.sprzedaz30d,
+      popytTrend: bartekPopytTrendByProductId[_topReturnsSku.input.productId] ?? "stable",
     }
   : null;
 
 // Wiersze tabeli SKU Doroty — wszystkie SKU z cennika, wzbogacone o dane produktu i popyt.
 export const dorotaProductRows: PricingProductRow[] = pricingSkuInputs.map((input) => {
   const product = products.find((p) => p.id === input.productId);
+  const popytTrend = input.popytWysoki ? "up" : input.zalega ? "down" : "stable";
   return {
     name: product?.name ?? input.productId,
     imageSrc: product?.images[0] ?? "",
@@ -236,8 +239,10 @@ export const dorotaProductRows: PricingProductRow[] = pricingSkuInputs.map((inpu
     cena: input.cena,
     dniOdZmiany: input.dniOdZmiany,
     mediana: input.mediana,
+    benchmarkSub: `${input.n} ofert`,
     roznicaPct: Math.round(((input.cena / input.mediana) - 1) * 100),
     popyt: salesByProductId.get(input.productId) ?? 0,
+    popytTrend,
   };
 });
 
@@ -280,6 +285,7 @@ export const returnsAction: ReturnsActionCard = {
       returnsCount: 0,
       cena: 0,
       popyt: 0,
+      popytTrend: "stable" as const,
     },
   ],
   options: [

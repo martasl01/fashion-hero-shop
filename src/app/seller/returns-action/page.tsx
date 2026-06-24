@@ -46,6 +46,7 @@ export default function ReturnsActionPage() {
     returnsCount: 0,
     cena: 0,
     popyt: 0,
+    popytTrend: "stable" as const,
   };
 
   return (
@@ -114,7 +115,7 @@ export default function ReturnsActionPage() {
               </p>
             </section>
           )}
-          <ReasonDrivenAction action={resolution.action} product={productRow} />
+          <ReasonDrivenAction action={resolution.action} product={productRow} hideProductCard />
         </>
       ) : (
         <section className="flex flex-col gap-3">

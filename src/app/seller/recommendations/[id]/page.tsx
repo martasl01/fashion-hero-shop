@@ -2,10 +2,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ChevronLeft, Check, RotateCcw, ArrowRight } from "lucide-react";
-import { sellerRecommendations } from "@/data/seller-dashboard";
+import { sellerRecommendations, dorotaProductRows } from "@/data/seller-dashboard";
 import { products } from "@/data/products";
 import { MetricTile } from "@/components/seller/metric-tile";
 import { AffectedProductsTable } from "@/components/seller/affected-products-table";
+import { PricingProductsTable } from "@/components/seller/pricing-products-table";
 import { PriceGapEvidence } from "@/components/seller/price-gap-evidence";
 import { resolvePriceGap } from "@/lib/price-gap";
 
@@ -145,13 +146,13 @@ export default async function RecommendationDetailPage({ params, searchParams }:
           </div>
         </div>
 
-        {/* Tabela SKU objętych rekomendacją — dla cennika z kolumną popytu;
-            dla pozostałych kategorii pojedynczy blok SKU bez zmian. */}
+        {/* Tabela SKU — cennik: PricingProductsTable z trendem i benchmarkiem;
+            pozostałe kategorie: pojedynczy blok SKU. */}
         {rec.category === "cennik" ? (
-          <AffectedProductsTable
-            rows={rec.affectedProductRows}
-            recId={rec.id}
-            productImageMap={productImageMap}
+          <PricingProductsTable
+            rows={dorotaProductRows.filter((r) =>
+              rec.affectedProductRows.some((a) => a.sku === r.sku)
+            )}
           />
         ) : (
           <div className="border border-black/10 rounded-xl overflow-hidden bg-cream-light">
