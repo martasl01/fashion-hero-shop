@@ -50,8 +50,8 @@ function actionForReason(top: ReturnReason): ReasonDrivenAction {
         kind: "fix_size_table",
         title: "Popraw tabelę rozmiarów",
         insight:
-          "Popraw tabelę rozmiarów w górę. Nie ruszaj L/XL — tam dopasowanie jest w normie.",
-        quote: "Dopisz w opisie: „produkt mały w kroju — rozważ rozmiar większy”.",
+          “Realne wymiary wkładki per rozmiar, w cm. Zmierz fizycznie długość wewnętrzną każdego numeru i wstaw tabelę. Dla butów to jedyny wiarygodny sygnał — numer 38 znaczy co innego u każdego producenta.”,
+        quote: “Wyraźna adnotacja o pasowaniu, na górze opisu, nie zakopana: „Model ma zaniżoną rozmiarówkę — zalecamy zamówienie o pół/jeden numer większy.” Najtańsza zmiana o największym wpływie.”,
         ctaLabel: "Popraw tabelę rozmiarów",
         wozEvent: "woz_fix_size_table_click",
       };
