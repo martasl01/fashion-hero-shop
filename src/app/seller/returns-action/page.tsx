@@ -9,6 +9,7 @@ import { SizeBreakdownTable } from "@/components/seller/size-breakdown-table";
 import { ReasonDrivenAction } from "@/components/seller/reason-driven-action";
 import { ReturnsProductsTable } from "@/components/seller/returns-products-table";
 import { resolveReturnReasons } from "@/lib/return-reasons";
+import { PrototypeSurveyBox } from "@/components/seller/prototype-survey-box";
 
 export default function ReturnsActionPage() {
   const rec = returnsRecommendation;
@@ -156,6 +157,8 @@ export default function ReturnsActionPage() {
           </div>
         </div>
       </section>
+
+      <PrototypeSurveyBox wariant="bartek" />
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { AffectedProductsTable } from "@/components/seller/affected-products-tab
 import { PricingProductsTable } from "@/components/seller/pricing-products-table";
 import { PriceGapEvidence } from "@/components/seller/price-gap-evidence";
 import { resolvePriceGap } from "@/lib/price-gap";
+import { PrototypeSurveyBox } from "@/components/seller/prototype-survey-box";
 
 const backRoutes: Record<string, string> = {
   "one-action": "/seller/one-action",
@@ -215,6 +216,8 @@ export default async function RecommendationDetailPage({ params, searchParams }:
           </div>
         </div>
       </section>
+
+      <PrototypeSurveyBox wariant="dorota" />
     </div>
   );
 }
