@@ -6,6 +6,7 @@ import { MetricTile } from "@/components/seller/metric-tile";
 import { PricingProductsTable } from "@/components/seller/pricing-products-table";
 import { PrototypeSurveyBox } from "@/components/seller/prototype-survey-box";
 import { CheckboxActions, type CheckboxAction } from "@/components/seller/checkbox-actions";
+import { stateKeyForSku } from "@/lib/action-state-key";
 
 // Formatka Dorota (cena) — 3 akcje do checkboxów dla SKU z „zapomnianą ceną".
 // Opisy jako template literals (backticki): zawierają polskie cudzysłowy „",
@@ -55,7 +56,7 @@ export default function PricingActionPage() {
   }
 
   const product = rec.primaryProduct;
-  const stateKey = `reko-actions-${product.sku}`;
+  const stateKey = stateKeyForSku(product.sku);
   const tableRows = dorotaProductRows.filter((r) => r.sku === product.sku);
 
   return (

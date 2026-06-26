@@ -4,12 +4,13 @@ import Image from "next/image";
 import { CheckCircle2, Circle, TrendingDown } from "lucide-react";
 import { returnsRecommendation } from "@/data/seller-dashboard";
 import { useCheckboxState } from "@/hooks/use-checkbox-state";
+import { stateKeyForSku } from "@/lib/action-state-key";
 
 const ACTIONS_TOTAL = 3;
 
 export function BartekActionWidget() {
   const sku = returnsRecommendation?.primaryProduct.sku ?? "";
-  const stateKey = `reko-actions-${sku}`;
+  const stateKey = stateKeyForSku(sku);
   const { checkedCount } = useCheckboxState(stateKey);
 
   return (

@@ -10,6 +10,7 @@ import { ReturnsProductsTable } from "@/components/seller/returns-products-table
 import { resolveReturnReasons } from "@/lib/return-reasons";
 import { PrototypeSurveyBox } from "@/components/seller/prototype-survey-box";
 import { CheckboxActions, type CheckboxAction } from "@/components/seller/checkbox-actions";
+import { stateKeyForSku } from "@/lib/action-state-key";
 
 // Formatka Bartek — 3 akcje do checkboxów (rozmiar jako dominujący powód zwrotu)
 const BARTEK_ROZMIAR_ACTIONS: CheckboxAction[] = [
@@ -74,7 +75,7 @@ export default function ReturnsActionPage() {
 
   const isRozmiarCase =
     resolution?.mode === "actionable" && resolution.topReason?.code === "rozmiar";
-  const stateKey = `reko-actions-${product.sku}`;
+  const stateKey = stateKeyForSku(product.sku);
 
   return (
     <div className="p-8 max-w-5xl flex flex-col gap-10">

@@ -1,12 +1,12 @@
 "use client";
 import { useCallback, useSyncExternalStore } from "react";
 
-// Stan checkboxów akcji trzymany w localStorage pod kluczem `reko-actions-${sku}`.
-// Czytamy go przez useSyncExternalStore (a NIE w inicjalizatorze useState), bo strony
-// akcji są prerenderowane statycznie: serwer nie ma localStorage, więc początkowy render
-// musi być pusty, a klient dociąga wartość po hydracji bez ostrzeżenia o niezgodności.
-// To też synchronizuje licznik widgetu na dashboardzie z checklistą na stronie akcji
-// (ten sam klucz, wspólny store + zdarzenie „storage" między kartami).
+// Stan checkboxów akcji trzymany w localStorage pod kluczem z `stateKeyForSku`
+// (@/lib/action-state-key). Czytamy go przez useSyncExternalStore (a NIE w inicjalizatorze
+// useState), bo strony akcji są prerenderowane statycznie: serwer nie ma localStorage, więc
+// początkowy render musi być pusty, a klient dociąga wartość po hydracji bez ostrzeżenia
+// o niezgodności. To też synchronizuje licznik widgetu na dashboardzie z checklistą na
+// stronie akcji (ten sam klucz, wspólny store + zdarzenie „storage" między kartami).
 
 const EMPTY = new Set<string>();
 
