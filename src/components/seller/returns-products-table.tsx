@@ -9,16 +9,16 @@ interface ReturnsProductsTableProps {
   rows: ReturnsProductRow[];
 }
 
-// Tabela produktów dotkniętych problemem zwrotów. Link „edytuj" to atrapa WoZ:
-// rejestruje intencję (zdarzenie PostHog), ale nie prowadzi do realnej edycji
-// i nie pokazuje potwierdzenia akcji.
+// Tabela produktów dotkniętych problemem zwrotów. Kolumna „Akcja" prowadzi do karty
+// produktu (/seller/products/{sku}, panel „Poza prototypem AIPH2") i rejestruje
+// intencję przejścia w PostHog (woz_returns_action_click) — lustro tabeli cennikowej.
 export function ReturnsProductsTable({
   rows,
 }: ReturnsProductsTableProps) {
   const posthog = usePostHog();
 
-  const handleEdit = (sku: string) => {
-    posthog?.capture("woz_edit_click", { sku, source: "returns-action" });
+  const handleAction = (sku: string) => {
+    posthog?.capture("woz_returns_action_click", { sku, source: "returns-action" });
   };
 
   return (
@@ -90,7 +90,7 @@ export function ReturnsProductsTable({
                 <td className="px-4 py-3 text-right">
                   <Link
                     href={`/seller/products/${row.sku}`}
-                    onClick={() => handleEdit(row.sku)}
+                    onClick={() => handleAction(row.sku)}
                     className="inline-block bg-charcoal text-white text-[12px] font-semibold whitespace-nowrap px-3 py-2 rounded-md hover:opacity-80 transition-opacity"
                   >
                     Przejdź do produktu
