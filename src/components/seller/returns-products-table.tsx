@@ -7,14 +7,17 @@ import { PopytCell } from "@/components/seller/popyt-cell";
 
 interface ReturnsProductsTableProps {
   rows: ReturnsProductRow[];
+  // Wariant osadzony w karcie „Co możesz zrobić" (lustro PricingProductsTable):
+  // margines od krawędzi karty, jasne tło tabeli, bez nagłówka liczności,
+  // z kolumną akcji „Przejdź do produktu". Domyślnie false → wygląd jak na
+  // współdzielonym drill-downie (bez zmian).
+  embedded?: boolean;
 }
 
 // Tabela produktów dotkniętych problemem zwrotów. Kolumna „Akcja" prowadzi do karty
 // produktu (/seller/products/{sku}, panel „Poza prototypem AIPH2") i rejestruje
 // intencję przejścia w PostHog (woz_returns_action_click) — lustro tabeli cennikowej.
-export function ReturnsProductsTable({
-  rows,
-}: ReturnsProductsTableProps) {
+export function ReturnsProductsTable({ rows, embedded = false }: ReturnsProductsTableProps) {
   const posthog = usePostHog();
 
   const handleAction = (sku: string) => {
@@ -22,8 +25,17 @@ export function ReturnsProductsTable({
   };
 
   return (
-    <div className="px-6 pb-6 pt-4">
-      <div className="border border-black/10 rounded-lg overflow-x-auto bg-white">
+    <div className={embedded ? "px-6 pb-6 pt-4" : "flex flex-col gap-2"}>
+      {!embedded && (
+        <span className="text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
+          {rows.length} SKU – ostatnie 90 dni
+        </span>
+      )}
+      <div
+        className={`border border-black/10 rounded-lg overflow-x-auto ${
+          embedded ? "bg-white" : "bg-cream-light"
+        }`}
+      >
         <table className="w-full text-[13px]">
           <thead>
             <tr className="border-b border-black/10">
@@ -45,9 +57,11 @@ export function ReturnsProductsTable({
               <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
                 Popyt
               </th>
-              <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
-                Akcja
-              </th>
+              {embedded && (
+                <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-warm-gray px-4 py-3">
+                  Akcja
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -87,15 +101,17 @@ export function ReturnsProductsTable({
                 <td className="px-4 py-3 text-right text-warm-gray">
                   <PopytCell popyt={row.popyt} trend={row.popytTrend} />
                 </td>
-                <td className="px-4 py-3 text-right">
-                  <Link
-                    href={`/seller/products/${row.sku}`}
-                    onClick={() => handleAction(row.sku)}
-                    className="inline-block bg-charcoal text-white text-[12px] font-semibold whitespace-nowrap px-3 py-2 rounded-md hover:opacity-80 transition-opacity"
-                  >
-                    Przejdź do produktu
-                  </Link>
-                </td>
+                {embedded && (
+                  <td className="px-4 py-3 text-right">
+                    <Link
+                      href={`/seller/products/${row.sku}`}
+                      onClick={() => handleAction(row.sku)}
+                      className="inline-block bg-charcoal text-white text-[12px] font-semibold whitespace-nowrap px-3 py-2 rounded-md hover:opacity-80 transition-opacity"
+                    >
+                      Przejdź do produktu
+                    </Link>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

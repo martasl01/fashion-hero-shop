@@ -1,41 +1,15 @@
 import Link from "next/link";
-import Image from "next/image";
 import { ChevronLeft, Check } from "lucide-react";
 import { returnsRecommendation, bartekProductRow } from "@/data/seller-dashboard";
 import { bartekReasonsByProductId } from "@/data/mock-sku-sales";
-import { MetricTile } from "@/components/seller/metric-tile";
+import { BARTEK_ROZMIAR_ACTIONS, BARTEK_ROZMIAR_INTRO } from "@/data/seller-actions";
+import { ActionPageShell } from "@/components/seller/action-page-shell";
 import { ReturnReasonsBlock } from "@/components/seller/return-reasons-block";
 import { ReasonDrivenAction } from "@/components/seller/reason-driven-action";
 import { ReturnsProductsTable } from "@/components/seller/returns-products-table";
 import { resolveReturnReasons } from "@/lib/return-reasons";
-import { PrototypeSurveyBox } from "@/components/seller/prototype-survey-box";
-import { CheckboxActions, type CheckboxAction } from "@/components/seller/checkbox-actions";
+import { CheckboxActions } from "@/components/seller/checkbox-actions";
 import { stateKeyForSku } from "@/lib/action-state-key";
-
-// Formatka Bartek — 3 akcje do checkboxów (rozmiar jako dominujący powód zwrotu)
-const BARTEK_ROZMIAR_ACTIONS: CheckboxAction[] = [
-  {
-    id: "wskazowka",
-    label: "Dodaj wskazówkę o rozmiarze",
-    description:
-      `Jeśli ten model ma niestandardową rozmiarówkę, dodaj prosty komunikat na karcie produktu. Przykłady: „Wskazówka: Wybierz rozmiar większy niż zwykle"; „Wybierz rozmiar o jeden mniejszy niż zwykle".`,
-  },
-  {
-    id: "wkladka",
-    label: "Podaj długość wkładki w centymetrach",
-    description:
-      `Zmierz wkładkę i uzupełnij dokładne wymiary dla dostępnych rozmiarów. To najprostszy sposób, żeby kupujący mogli porównać buty ze swoją stopą albo parą, którą już noszą. Przykład: „Rozmiar 38: długość wkładki 24,5 cm".`,
-  },
-  {
-    id: "dopasowanie",
-    label: "Dodaj informację o dopasowaniu buta",
-    description:
-      `Napisz, czy model jest raczej wąski, szeroki czy standardowy. Przykłady: „Model dobrze sprawdzi się przy szerszej stopie." / „Model dobrze sprawdzi się przy węższej stopie."`,
-  },
-];
-
-const BARTEK_ROZMIAR_INTRO =
-  "Ten produkt wraca z powodu rozmiaru. Możesz zmniejszyć ryzyko zwrotu, dodając kupującym więcej informacji o dopasowaniu. Zacznij od jednej rzeczy – nawet krótka wskazówka może pomóc wybrać właściwy rozmiar.";
 
 export default function ReturnsActionPage() {
   const rec = returnsRecommendation;
@@ -78,57 +52,17 @@ export default function ReturnsActionPage() {
   const stateKey = stateKeyForSku(product.sku);
 
   return (
-    <div className="p-8 max-w-5xl flex flex-col gap-10">
-      {/* Wróć */}
-      <Link
-        href="/seller"
-        className="self-start text-[13px] text-charcoal hover:opacity-70 transition-opacity flex items-center gap-1"
-      >
-        <ChevronLeft size={14} />
-        Wróć do dashboardu
-      </Link>
-
-      {/* Kategoria + h1 + tożsamość produktu */}
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <span className="self-start text-[10px] font-semibold uppercase tracking-widest text-warm-gray border border-black/10 rounded px-2 py-1 bg-cream-light">
-            zwroty
-          </span>
-          <h1 className="text-[28px] font-semibold text-charcoal leading-snug">{rec.title}</h1>
-        </div>
-        <div className="flex items-center gap-3.5">
-          <Image
-            src={product.imageSrc}
-            alt={product.name}
-            width={56}
-            height={56}
-            className="rounded-md object-cover flex-shrink-0"
-          />
-          <div className="flex flex-col gap-0.5">
-            <span className="text-[16px] font-semibold text-charcoal">{product.name}</span>
-            <div className="flex items-center gap-2 text-[13px] text-warm-gray">
-              <span>SKU: {product.sku}</span>
-              {product.category && (
-                <>
-                  <span className="text-black/20">·</span>
-                  <span>{product.category}</span>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Co mówią liczby */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-[17px] font-semibold text-charcoal">Co mówią liczby</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <MetricTile metric={{ id: "result", label: rec.yourResultTile.label, value: rec.yourResultTile.value, sub: rec.yourResultTile.sub }} />
-          <MetricTile metric={{ id: "benchmark", label: rec.benchmarkTile.label, value: rec.benchmarkTile.value, sub: rec.benchmarkTile.sub, sample: rec.benchmarkTile.sample }} />
-          <MetricTile metric={{ id: "cost", label: rec.financialEffectTile.label, value: rec.financialEffectTile.value, sub: rec.financialEffectTile.sub }} />
-        </div>
-      </section>
-
+    <ActionPageShell
+      categoryLabel="zwroty"
+      title={rec.title}
+      product={product}
+      surveyVariant="bartek"
+      metrics={[
+        { id: "result", label: rec.yourResultTile.label, value: rec.yourResultTile.value, sub: rec.yourResultTile.sub },
+        { id: "benchmark", label: rec.benchmarkTile.label, value: rec.benchmarkTile.value, sub: rec.benchmarkTile.sub, sample: rec.benchmarkTile.sample },
+        { id: "cost", label: rec.financialEffectTile.label, value: rec.financialEffectTile.value, sub: rec.financialEffectTile.sub },
+      ]}
+    >
       {/* Dlaczego ten produkt wraca — osobny background */}
       {resolution?.mode === "actionable" && (
         <div className="border border-black/10 rounded-xl p-6 bg-cream-light">
@@ -198,7 +132,7 @@ export default function ReturnsActionPage() {
             )
           )}
           <div className="border-t border-black/10">
-            <ReturnsProductsTable rows={[productRow]} />
+            <ReturnsProductsTable rows={[productRow]} embedded />
           </div>
         </div>
       </section>
@@ -229,8 +163,6 @@ export default function ReturnsActionPage() {
           </div>
         </div>
       </section>
-
-      <PrototypeSurveyBox wariant="bartek" />
-    </div>
+    </ActionPageShell>
   );
 }
