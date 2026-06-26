@@ -31,7 +31,7 @@ import type { ReturnsSkuInput, ReturnReasonsData } from "@/types/seller-dashboar
 // udzialPowodu ≥ 0,40. RR w normie → KEEP (karta się nie renderuje).
 export const bartekReturnsSkus: ReturnsSkuInput[] = [
   // MF-307 Botki Chelsea → REKO Rozmiar (RR 61% vs mediana 27%, +34pp; rozmiar dominuje).
-  { productId: "307", skuName: "Buty Skate", sprzedaz30d: 54, rr: 0.61, rrMediana: 0.27, n: 88, nPodkat: 18, kosztZwrotow: 5338, powod: "rozmiar", udzialPowodu: 0.58, subcategory: "Skate" },
+  { productId: "307", skuName: "Buty Skate", sprzedaz30d: 54, rr: 0.61, rrMediana: 0.27, n: 88, nPodkat: 18, kosztZwrotow: 13446, powod: "rozmiar", udzialPowodu: 0.78, subcategory: "Skate" },
   // MF-312 Sneakersy Court → KEEP (RR 22% w normie podkategorii, odchylenie < 8pp).
   { productId: "312", skuName: "Sneakersy Court", sprzedaz30d: 41, rr: 0.22, rrMediana: 0.24, n: 63, nPodkat: 14, kosztZwrotow: 710, powod: "jakosc", udzialPowodu: 0.30, subcategory: "Sneakersy" },
   // MF-355 Mokasyny Soft → REKO Wygląd (RR 49% vs 20%, +29pp; powód=wygląd; n≥20 ok).

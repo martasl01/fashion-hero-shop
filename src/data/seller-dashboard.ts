@@ -83,7 +83,7 @@ const topPricingSku = pickTopPricingSku(pricingSkuInputs, salesByProductId);
 const topPricingProduct = topPricingSku
   ? products.find((p) => p.id === topPricingSku.input.productId)
   : undefined;
-const cennikRecommendation =
+export const cennikRecommendation =
   topPricingSku && topPricingProduct
     ? buildCennikRecommendation(
         topPricingSku.input,

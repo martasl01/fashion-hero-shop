@@ -66,6 +66,7 @@ const categoryLabelPl: Record<Product["productCategory"], string> = {
 // docelowej ani „+10%". Zero narracji o tym, CZY rekomendować (rozstrzygnął silnik).
 interface CardCopyArgs {
   productName: string;
+  cena: number; // aktualna cena SKU (do reguły powrotu „wróć do X zł")
   mediana: number;
   months: number; // dni_od_zmiany / 30 — wiek ceny (diagnostyczny)
   ruchPct: number; // ruch mediany w % (diagnostyczny)
@@ -99,7 +100,7 @@ const cardCopyByReason: Record<
   "forgotten_price" | "demand" | "too_expensive",
   (a: CardCopyArgs) => CardCopy
 > = {
-  forgotten_price: ({ productName, mediana, months, ruchPct, sales30d }) => ({
+  forgotten_price: ({ productName, cena, mediana, months, ruchPct, sales30d }) => ({
     title: `Twoja cena stoi w miejscu od ${months} miesięcy, a konkurencja podniosła ceny o ${ruchPct}%`,
     insightShort: "Jesteś teraz najtańszy w kategorii. Rozważ podwyżkę, żeby nadgonić rynek.",
     ctaLabel: "Zobacz porównanie z rynkiem",
@@ -117,7 +118,7 @@ const cardCopyByReason: Record<
     actionInsight: `Masz zapas do mediany podkategorii (${mediana} zł), więc ryzyko spadku zamówień jest niewielkie.`,
     successMetric: `Utarg z ${productName} (cena × liczba zamówień), nie sama liczba zamówień`,
     keepRule: "utarg w górę → zostaw nową cenę i możesz powtórzyć na kolejnym produkcie",
-    revertRule: "utarg w dół → wróć do poprzedniej ceny",
+    revertRule: `utarg w dół → wróć do ${cena} zł`,
   }),
   demand: ({ productName, mediana, deviationPct }) => ({
     title: `Ten produkt schodzi szybko, mimo że jest o ${deviationPct}% tańszy od rynku`,
@@ -178,6 +179,7 @@ export function buildCennikRecommendation(
 
   const copy = cardCopyByReason[reason]({
     productName: product.name,
+    cena: input.cena,
     mediana: input.mediana,
     months,
     ruchPct: input.ruchMedianyPct,

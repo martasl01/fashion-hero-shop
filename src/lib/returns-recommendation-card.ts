@@ -82,9 +82,9 @@ const cardCopyBySection: Record<CopySection, (a: CopyArgs) => CardCopy> = {
     short: `${a.udzialPct} zwrotów = zły rozmiar, RR +${a.odchyleniePp} pp → dodaj tabelę rozmiarów.`,
   }),
   "1b": (a) => ({
-    title: `${a.udzialPct} zwrotów tego produktu wraca jako „za małe" — najczęściej w rozmiarze ${a.rozmiarTop}`,
+    title: `${a.udzialPct} zwrotów tego produktu wynika z powodu niestandardowej rozmiarówki`,
     body: "Kupujące zamawiają swój rozmiar, a dostają mniejszy. Dodaj tabelę rozmiarów z wymiarami w cm, żeby brały rozmiar wyżej, zanim zwrócą.",
-    short: `${a.udzialPct} zwrotów „za małe" (${a.rozmiarTop}) → tabela wymiarów w cm.`,
+    short: `${a.udzialPct} zwrotów = niestandardowa rozmiarówka → tabela wymiarów w cm.`,
   }),
   "1c": (a) => ({
     title: `${a.udzialPct} zwrotów tego produktu wraca jako „za duże" — najczęściej w rozmiarze ${a.rozmiarTop}`,
@@ -205,10 +205,10 @@ export function buildReturnsRecommendation(
       }
     : {
         action: copy.body,
-        testWindow: "2 tygodnie",
+        testWindow: "Okno obserwacji efektu: 6 tygodni. Metryka sukcesu: Procent zwrotów na tym SKU w dół – liczony na zamówieniach sprzed minimum 30 dni.",
         successMetric: "Return rate produktu (zwroty / zamówienia)",
-        keepRule: "RR w dół → zostaw zmianę i powtórz na kolejnym produkcie.",
-        revertRule: "RR bez zmian → przyczyna nie tu, sprawdź inny powód zwrotu.",
+        keepRule: "Zwroty w dół → zostaw zmianę i powtórz na kolejnym produkcie.",
+        revertRule: "Zwroty bez zmian → przyczyna nie tu, sprawdź inny powód zwrotu.",
       };
 
   return {
@@ -232,12 +232,12 @@ export function buildReturnsRecommendation(
     benchmarkTile: {
       label: "Benchmark konkurencji",
       value: pct(input.rrMediana),
-      sub: `Mediana zwrotów w podkategorii · porównano: ${input.nPodkat} ofert`,
+      sub: `${input.subcategory ? `${input.subcategory} · ` : ""}${input.nPodkat} ofert · 90 dni`,
     },
     financialEffectTile: {
-      label: "Ile kosztują Cię te zwroty",
+      label: "Wartość zwróconego towaru",
       value: zl(input.kosztZwrotow),
-      sub: "Obniżona odsprzedaż + towar zamrożony do następnego sezonu (nie koszt obsługi zwrotu — ten pokrywa platforma).",
+      sub: `${Math.round(input.rr * input.n)} zwrotów w 90 dni, liczone po cenie sprzedaży`,
     },
     contextExplanation: copy.body,
     affectedProductRows: [

@@ -1,15 +1,40 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronLeft, Check, RotateCcw } from "lucide-react";
+import { ChevronLeft, Check } from "lucide-react";
 import { returnsRecommendation, bartekProductRow } from "@/data/seller-dashboard";
-import { bartekReasonsByProductId, bartekReturnsSkus } from "@/data/mock-sku-sales";
+import { bartekReasonsByProductId } from "@/data/mock-sku-sales";
 import { MetricTile } from "@/components/seller/metric-tile";
 import { ReturnReasonsBlock } from "@/components/seller/return-reasons-block";
-import { SizeBreakdownTable } from "@/components/seller/size-breakdown-table";
 import { ReasonDrivenAction } from "@/components/seller/reason-driven-action";
 import { ReturnsProductsTable } from "@/components/seller/returns-products-table";
 import { resolveReturnReasons } from "@/lib/return-reasons";
 import { PrototypeSurveyBox } from "@/components/seller/prototype-survey-box";
+import { CheckboxActions, type CheckboxAction } from "@/components/seller/checkbox-actions";
+
+// Formatka Bartek — 3 akcje do checkboxów (rozmiar jako dominujący powód zwrotu)
+const BARTEK_ROZMIAR_ACTIONS: CheckboxAction[] = [
+  {
+    id: "wskazowka",
+    label: "Dodaj wskazówkę o rozmiarze",
+    description:
+      `Jeśli ten model ma niestandardową rozmiarówkę, dodaj prosty komunikat na karcie produktu. Przykłady: „Wskazówka: Wybierz rozmiar większy niż zwykle"; „Wybierz rozmiar o jeden mniejszy niż zwykle".`,
+  },
+  {
+    id: "wkladka",
+    label: "Podaj długość wkładki w centymetrach",
+    description:
+      `Zmierz wkładkę i uzupełnij dokładne wymiary dla dostępnych rozmiarów. To najprostszy sposób, żeby kupujący mogli porównać buty ze swoją stopą albo parą, którą już noszą. Przykład: „Rozmiar 38: długość wkładki 24,5 cm".`,
+  },
+  {
+    id: "dopasowanie",
+    label: "Dodaj informację o dopasowaniu buta",
+    description:
+      `Napisz, czy model jest raczej wąski, szeroki czy standardowy. Przykłady: „Model dobrze sprawdzi się przy szerszej stopie." / „Model dobrze sprawdzi się przy węższej stopie."`,
+  },
+];
+
+const BARTEK_ROZMIAR_INTRO =
+  "Ten produkt wraca z powodu rozmiaru. Możesz zmniejszyć ryzyko zwrotu, dodając kupującym więcej informacji o dopasowaniu. Zacznij od jednej rzeczy – nawet krótka wskazówka może pomóc wybrać właściwy rozmiar.";
 
 export default function ReturnsActionPage() {
   const rec = returnsRecommendation;
@@ -34,9 +59,6 @@ export default function ReturnsActionPage() {
   const product = rec.primaryProduct;
   const reasonsData = bartekReasonsByProductId[product.sku];
   const resolution = reasonsData ? resolveReturnReasons(reasonsData) : null;
-  const skuData = bartekReturnsSkus.find((s) => s.productId === product.sku);
-  const subcategory = skuData?.subcategory ?? product.category;
-  // ReasonDrivenAction wymaga ReturnsProductRow — używamy bartekProductRow gdy dostępny.
   const productRow = bartekProductRow ?? {
     name: product.name,
     sku: product.sku,
@@ -49,6 +71,10 @@ export default function ReturnsActionPage() {
     popyt: 0,
     popytTrend: "stable" as const,
   };
+
+  const isRozmiarCase =
+    resolution?.mode === "actionable" && resolution.topReason?.code === "rozmiar";
+  const stateKey = `reko-actions-${product.sku}`;
 
   return (
     <div className="p-8 max-w-5xl flex flex-col gap-10">
@@ -69,8 +95,6 @@ export default function ReturnsActionPage() {
           </span>
           <h1 className="text-[28px] font-semibold text-charcoal leading-snug">{rec.title}</h1>
         </div>
-
-        {/* Tożsamość produktu */}
         <div className="flex items-center gap-3.5">
           <Image
             src={product.imageSrc}
@@ -81,7 +105,15 @@ export default function ReturnsActionPage() {
           />
           <div className="flex flex-col gap-0.5">
             <span className="text-[16px] font-semibold text-charcoal">{product.name}</span>
-            <span className="text-[13px] text-warm-gray">SKU: {product.sku}</span>
+            <div className="flex items-center gap-2 text-[13px] text-warm-gray">
+              <span>SKU: {product.sku}</span>
+              {product.category && (
+                <>
+                  <span className="text-black/20">·</span>
+                  <span>{product.category}</span>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -96,38 +128,79 @@ export default function ReturnsActionPage() {
         </div>
       </section>
 
-      {/* Dlaczego wraca → rozmiary → co to znaczy → akcja (sterowane top powodem) */}
-      {resolution ? (
-        <>
-          {resolution.mode === "actionable" && (
-            <ReturnReasonsBlock reasons={resolution.reasons} sample={resolution.sample} />
-          )}
-          {resolution.showSizeBreakdown && resolution.sizeBreakdown && (
-            <SizeBreakdownTable
-              breakdown={resolution.sizeBreakdown}
-              comparison={resolution.sizeComparison}
-            />
-          )}
-          {resolution.meaning && (
-            <section className="flex flex-col gap-3">
-              <h2 className="text-[17px] font-semibold text-charcoal">Co to znaczy</h2>
-              <p className="text-[14px] text-charcoal leading-relaxed max-w-prose">
-                {resolution.meaning}
-              </p>
-            </section>
-          )}
-          <ReasonDrivenAction action={resolution.action} product={productRow} hideProductCard />
-        </>
-      ) : (
-        <section className="flex flex-col gap-3">
+      {/* Dlaczego ten produkt wraca — osobny background */}
+      {resolution?.mode === "actionable" && (
+        <div className="border border-black/10 rounded-xl p-6 bg-cream-light">
+          <ReturnReasonsBlock reasons={resolution.reasons} sample={resolution.sample} />
+        </div>
+      )}
+
+      {/* Co to znaczy — osobny background */}
+      {isRozmiarCase ? (
+        <section className="flex flex-col gap-4">
           <h2 className="text-[17px] font-semibold text-charcoal">Co to znaczy</h2>
-          <p className="text-[14px] text-charcoal leading-relaxed max-w-prose">
-            {rec.contextExplanation}
-          </p>
+          <div className="border border-black/10 rounded-xl p-6 bg-cream-light flex flex-col gap-4">
+            <p className="text-[14px] text-charcoal leading-relaxed max-w-prose">
+              Ten produkt wraca głównie z powodu niedopasowania rozmiaru. Kupujący biorą swój zwykły rozmiar i dostają za mały lub za duży.
+            </p>
+            <p className="text-[14px] text-charcoal leading-relaxed max-w-prose">
+              Przesyłki zwrotne pokrywa FashionHero, ale każdy zwrot generuje też Twoje straty poprzez:
+            </p>
+            <ul className="flex flex-col gap-1.5 pl-1">
+              {[
+                "czas obsługi paczek",
+                "koszt opakowań do przepakowania",
+                "zamrożony kapitał w krążącym towarze",
+                "ryzyko uszkodzenia produktu",
+                "spadek w algorytmach – gorsza pozycja oferty w wyszukiwarce platformy",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2 text-[14px] text-charcoal leading-relaxed">
+                  <span className="mt-2 w-1 h-1 rounded-full bg-charcoal flex-shrink-0" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ) : resolution?.meaning ? (
+        <section className="flex flex-col gap-4">
+          <h2 className="text-[17px] font-semibold text-charcoal">Co to znaczy</h2>
+          <div className="border border-black/10 rounded-xl p-6 bg-cream-light">
+            <p className="text-[14px] text-charcoal leading-relaxed max-w-prose">{resolution.meaning}</p>
+          </div>
+        </section>
+      ) : (
+        <section className="flex flex-col gap-4">
+          <h2 className="text-[17px] font-semibold text-charcoal">Co to znaczy</h2>
+          <div className="border border-black/10 rounded-xl p-6 bg-cream-light">
+            <p className="text-[14px] text-charcoal leading-relaxed max-w-prose">{rec.contextExplanation}</p>
+          </div>
         </section>
       )}
 
-      <ReturnsProductsTable rows={[productRow]} subcategory={subcategory} />
+      {/* Co możesz zrobić + tabela SKU — jeden card */}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-[17px] font-semibold text-charcoal">Co możesz zrobić</h2>
+        <div className="border border-black/10 rounded-xl overflow-hidden bg-cream-light">
+          {isRozmiarCase ? (
+            <CheckboxActions
+              actions={BARTEK_ROZMIAR_ACTIONS}
+              stateKey={stateKey}
+              intro={BARTEK_ROZMIAR_INTRO}
+              sku={product.sku}
+            />
+          ) : (
+            resolution && (
+              <div className="p-6">
+                <ReasonDrivenAction action={resolution.action} product={productRow} hideProductCard />
+              </div>
+            )
+          )}
+          <div className="border-t border-black/10">
+            <ReturnsProductsTable rows={[productRow]} />
+          </div>
+        </div>
+      </section>
 
       {/* Jak sprawdzić zmianę */}
       <section className="flex flex-col gap-4">
@@ -136,9 +209,7 @@ export default function ReturnsActionPage() {
           <div className="p-5">
             <p className="text-[14px] text-charcoal leading-relaxed">{rec.actionStep.testWindow}</p>
           </div>
-
           <div className="border-t border-black/10" />
-
           <div className="p-5 flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
               <span className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray flex items-center gap-1">
@@ -149,8 +220,8 @@ export default function ReturnsActionPage() {
             </div>
             <div className="flex flex-col gap-1.5">
               <span className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray flex items-center gap-1">
-                <RotateCcw size={10} />
-                Wycofaj
+                <span className="text-[10px]">↺</span>
+                Szukaj innej przyczyny
               </span>
               <p className="text-[14px] text-charcoal leading-relaxed">{rec.actionStep.revertRule}</p>
             </div>

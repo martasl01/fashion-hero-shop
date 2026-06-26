@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import Image from "next/image";
 import { usePostHog } from "posthog-js/react";
 import type { ReturnsProductRow } from "@/types/seller-dashboard";
@@ -6,7 +7,6 @@ import { PopytCell } from "@/components/seller/popyt-cell";
 
 interface ReturnsProductsTableProps {
   rows: ReturnsProductRow[];
-  subcategory: string;
 }
 
 // Tabela produktów dotkniętych problemem zwrotów. Link „edytuj" to atrapa WoZ:
@@ -14,21 +14,16 @@ interface ReturnsProductsTableProps {
 // i nie pokazuje potwierdzenia akcji.
 export function ReturnsProductsTable({
   rows,
-  subcategory,
 }: ReturnsProductsTableProps) {
   const posthog = usePostHog();
 
-  const handleEdit = (event: React.MouseEvent<HTMLAnchorElement>, sku: string) => {
-    event.preventDefault();
+  const handleEdit = (sku: string) => {
     posthog?.capture("woz_edit_click", { sku, source: "returns-action" });
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      <span className="text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
-        {rows.length} SKU – ostatnie 90 dni
-      </span>
-      <div className="border border-black/10 rounded-lg overflow-x-auto bg-cream-light">
+    <div className="px-6 pb-6 pt-4">
+      <div className="border border-black/10 rounded-lg overflow-x-auto bg-white">
         <table className="w-full text-[13px]">
           <thead>
             <tr className="border-b border-black/10">
@@ -93,13 +88,13 @@ export function ReturnsProductsTable({
                   <PopytCell popyt={row.popyt} trend={row.popytTrend} />
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <a
-                    href="#"
-                    onClick={(event) => handleEdit(event, row.sku)}
+                  <Link
+                    href={`/seller/products/${row.sku}`}
+                    onClick={() => handleEdit(row.sku)}
                     className="inline-block bg-charcoal text-white text-[12px] font-semibold whitespace-nowrap px-3 py-2 rounded-md hover:opacity-80 transition-opacity"
                   >
-                    Edytuj
-                  </a>
+                    Przejdź do produktu
+                  </Link>
                 </td>
               </tr>
             ))}
@@ -109,3 +104,4 @@ export function ReturnsProductsTable({
     </div>
   );
 }
+

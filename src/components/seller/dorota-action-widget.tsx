@@ -1,14 +1,14 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { CheckCircle2, Circle, TrendingDown } from "lucide-react";
-import { returnsRecommendation } from "@/data/seller-dashboard";
+import { CheckCircle2, Circle, Tag } from "lucide-react";
+import { cennikRecommendation } from "@/data/seller-dashboard";
 import { useCheckboxState } from "@/hooks/use-checkbox-state";
 
 const ACTIONS_TOTAL = 3;
 
-export function BartekActionWidget() {
-  const sku = returnsRecommendation?.primaryProduct.sku ?? "";
+export function DorotaActionWidget() {
+  const sku = cennikRecommendation?.primaryProduct.sku ?? "";
   const stateKey = `reko-actions-${sku}`;
   const { checkedCount } = useCheckboxState(stateKey);
 
@@ -26,31 +26,31 @@ export function BartekActionWidget() {
           opartą na danych z Twojego sklepu, żeby z tej samej sprzedaży zostawało Ci więcej.
         </p>
       </div>
-      {returnsRecommendation ? (
+      {cennikRecommendation ? (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Link
-            href="/seller/returns-action"
+            href="/seller/pricing-action"
             className="flex flex-col gap-3 bg-cream-light border border-black/10 rounded p-5 hover:border-charcoal transition-colors"
           >
             <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
-              <TrendingDown size={13} />
-              zwroty
+              <Tag size={13} />
+              cennik
             </span>
             <h3 className="text-[16px] font-semibold text-charcoal leading-snug">
-              {returnsRecommendation.title}
+              {cennikRecommendation.title}
             </h3>
             <div className="flex items-center gap-2.5">
               <Image
-                src={returnsRecommendation.primaryProduct.imageSrc}
-                alt={returnsRecommendation.primaryProduct.name}
+                src={cennikRecommendation.primaryProduct.imageSrc}
+                alt={cennikRecommendation.primaryProduct.name}
                 width={40}
                 height={40}
                 className="rounded-md object-cover flex-shrink-0"
               />
-              <span className="text-[11px] text-warm-gray">SKU: {returnsRecommendation.primaryProduct.sku}</span>
+              <span className="text-[11px] text-warm-gray">SKU: {cennikRecommendation.primaryProduct.sku}</span>
             </div>
             <p className="text-[12px] text-warm-gray leading-relaxed flex-1">
-              {returnsRecommendation.insightShort}
+              {cennikRecommendation.insightShort}
             </p>
             <div className="flex items-center gap-1.5">
               {checkedCount > 0
@@ -65,7 +65,7 @@ export function BartekActionWidget() {
         </div>
       ) : (
         <p className="text-[13px] text-warm-gray">
-          Wszystkie Twoje produkty mają zwroty w normie podkategorii. Wróć tu za tydzień.
+          Wszystkie Twoje ceny są w normie podkategorii. Wróć tu za tydzień.
         </p>
       )}
     </div>
