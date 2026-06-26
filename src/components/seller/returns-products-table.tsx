@@ -1,22 +1,8 @@
 "use client";
 import Image from "next/image";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { usePostHog } from "posthog-js/react";
-import type { ReturnsProductRow, PopytTrend } from "@/types/seller-dashboard";
-
-function PopytCell({ popyt, trend }: { popyt: number; trend: PopytTrend }) {
-  const Icon = trend === "up" ? TrendingUp : trend === "down" ? TrendingDown : Minus;
-  const color = trend === "up" ? "text-emerald-600" : trend === "down" ? "text-red-500" : "text-warm-gray";
-  return (
-    <div className="flex flex-col gap-0.5 items-end">
-      <span className="whitespace-nowrap">{popyt} szt./30 dni</span>
-      <span className={`flex items-center gap-0.5 text-[11px] ${color}`}>
-        <Icon size={11} />
-        {trend === "up" ? "rośnie" : trend === "down" ? "spada" : "stabilny"}
-      </span>
-    </div>
-  );
-}
+import type { ReturnsProductRow } from "@/types/seller-dashboard";
+import { PopytCell } from "@/components/seller/popyt-cell";
 
 interface ReturnsProductsTableProps {
   rows: ReturnsProductRow[];
