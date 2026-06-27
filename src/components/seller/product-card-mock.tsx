@@ -6,9 +6,12 @@ import { usePostHog } from "posthog-js/react";
 import { ChevronLeft, Pencil, Info } from "lucide-react";
 import type { Product } from "@/types";
 import type { SellerRecommendation } from "@/types/seller-dashboard";
+import type { ProductCardFallback } from "@/data/seller-dashboard";
 
 interface ProductCardMockProps {
   product: Product | null;
+  // Dane zastępcze dla SKU spoza katalogu (np. SKU zwrotowe Bartka). Używane, gdy product === null.
+  fallback?: ProductCardFallback | null;
   recommendation: SellerRecommendation | null;
   from: string | null;
   slug: string;
@@ -18,12 +21,19 @@ interface ProductCardMockProps {
 // panel zarządzania produktem, nie część testowanego prototypu. Podgląd read-only +
 // atrapa „Edytuj" (event WoZ, bez działającego formularza). Naprawia też wcześniejsze
 // 404 pod /seller/products/{slug}/edit, do którego linkują oba prototypy.
-export function ProductCardMock({ product, recommendation, from, slug }: ProductCardMockProps) {
+export function ProductCardMock({ product, fallback = null, recommendation, from, slug }: ProductCardMockProps) {
   const posthog = usePostHog();
   const [editHintShown, setEditHintShown] = useState(false);
 
-  const image = product?.images?.[0] ?? product?.colors?.[0]?.image ?? "";
+  const image = product?.images?.[0] ?? product?.colors?.[0]?.image ?? fallback?.imageSrc ?? "";
   const sku = product?.id ?? slug;
+  const name = product?.name ?? fallback?.name ?? "Produkt";
+  const category = product?.productCategory ?? fallback?.category ?? "—";
+  const price = product
+    ? `${product.price} zł`
+    : fallback?.price != null
+    ? `${fallback.price} zł`
+    : "—";
 
   const recNote = recommendation
     ? `Przyszedłeś tu z rekomendacji dla tego produktu: „${recommendation.insightShort}”`
@@ -73,7 +83,7 @@ export function ProductCardMock({ product, recommendation, from, slug }: Product
           Karta produktu
         </span>
         <h1 className="text-[28px] font-semibold text-charcoal leading-snug">
-          {product?.name ?? "Produkt"}
+          {name}
         </h1>
       </div>
 
@@ -81,7 +91,7 @@ export function ProductCardMock({ product, recommendation, from, slug }: Product
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {image ? (
           <div className="relative aspect-square w-full border border-black/10 rounded-lg overflow-hidden bg-cream-light">
-            <Image src={image} alt={product?.name ?? "Produkt"} fill className="object-cover" />
+            <Image src={image} alt={name} fill className="object-cover" />
           </div>
         ) : (
           <div className="aspect-square w-full border border-black/10 rounded-lg bg-black/5" />
@@ -94,12 +104,12 @@ export function ProductCardMock({ product, recommendation, from, slug }: Product
           </div>
           <div className="p-5 flex flex-col gap-1.5">
             <span className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray">Kategoria</span>
-            <p className="text-[14px] text-charcoal">{product?.productCategory ?? "—"}</p>
+            <p className="text-[14px] text-charcoal">{category}</p>
           </div>
           <div className="p-5 flex flex-col gap-1.5">
             <span className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray">Cena</span>
             <p className="text-[14px] font-semibold text-charcoal">
-              {product ? `${product.price} zł` : "—"}
+              {price}
             </p>
           </div>
           <div className="p-5 flex flex-col gap-1.5">

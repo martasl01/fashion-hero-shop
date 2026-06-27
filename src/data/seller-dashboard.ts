@@ -228,6 +228,28 @@ export const bartekProductRow: ReturnsProductRow | null = _topReturnsSku
     }
   : null;
 
+// Dane karty produktu dla SKU zwrotowych Bartka (307/312/355), których CELOWO nie ma
+// w katalogu kupującego (products.ts). Pozwala stronie /seller/products/[sku]/edit
+// pokazać nazwę, zdjęcie, kategorię i cenę bez wystawiania SKU w sklepie. null = sku
+// nie należy do Bartka (wtedy strona edycji używa katalogu jak dotąd).
+export interface ProductCardFallback {
+  name: string;
+  imageSrc: string;
+  category: string;
+  price: number | null;
+}
+
+export function resolveBartekProductCard(sku: string): ProductCardFallback | null {
+  const skuData = bartekReturnsSkus.find((s) => s.productId === sku);
+  if (!skuData) return null;
+  return {
+    name: skuData.skuName,
+    imageSrc: bartekImageSrcByProductId[sku] ?? "",
+    category: skuData.subcategory ? `Buty / ${skuData.subcategory}` : "—",
+    price: bartekSkuCena[sku] ?? null,
+  };
+}
+
 // Wiersze tabeli SKU Doroty — wszystkie SKU z cennika, wzbogacone o dane produktu i popyt.
 export const dorotaProductRows: PricingProductRow[] = pricingSkuInputs.map((input) => {
   const product = products.find((p) => p.id === input.productId);

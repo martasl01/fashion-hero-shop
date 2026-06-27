@@ -1,4 +1,4 @@
-import { sellerRecommendations, returnsAction } from "@/data/seller-dashboard";
+import { sellerRecommendations, returnsAction, resolveBartekProductCard } from "@/data/seller-dashboard";
 import { products } from "@/data/products";
 import { ProductCardMock } from "@/components/seller/product-card-mock";
 
@@ -23,6 +23,10 @@ export default async function SellerProductEditMockPage({ params, searchParams }
   const product =
     products.find((p) => p.slug === slug) ?? products.find((p) => p.id === slug) ?? null;
 
+  // SKU zwrotowe Bartka (307/312/355) nie istnieją w products.ts — dane karty bierzemy
+  // z mocków zwrotów, żeby strona edycji nie pokazywała pustej karty.
+  const fallback = product ? null : resolveBartekProductCard(slug);
+
   const recommendation = recId
     ? (sellerRecommendations.find((r) => r.id === recId) ?? null)
     : null;
@@ -30,6 +34,7 @@ export default async function SellerProductEditMockPage({ params, searchParams }
   return (
     <ProductCardMock
       product={product}
+      fallback={fallback}
       recommendation={recommendation}
       from={from ?? null}
       slug={slug}
